@@ -1,36 +1,31 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Keluarga Ikadam - Family Tree Builder
 
-## Getting Started
+An elegant, highly interactive, client-side family tree building application. Designed with modern React/Next.js, this app provides a beautifully styled, dynamic tree layout mapping out multiple generations using pure flexbox CSS styling natively combined with powerful canvas panning/zooming capabilities.
 
-First, run the development server:
+## ✨ Key Features & Capabilities
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- **Interactive Canvas Navigation:** Navigate massive ancestry trees effortlessly utilizing `react-zoom-pan-pinch` architecture. Full support for drag-to-pan, mouse-wheel zooming, and instant `Center Tree` tracking.
+- **Quick-Add Prototyping:** Hover over any existing family member to reveal rapid contextual insertion points (`+ Sibling`, `+ Spouse`, `+ Descendant`). Clicking these triggers smart-linked modals, automatically binding generational heights and biological constraints instantly.
+- **Native Polygamy & Multi-Spouse Support:** Dynamically rendering distinct maternal/paternal branches organically. Spouses are intelligently grouped via structural horizontal dashes spanning their primary partner seamlessly tying specific children to exact maternal bonds safely decoupling generic sub-trees natively avoiding duplicate layout clusters!
+- **Image Upload & Live Camera Capture:** Give a face to the name! The edit modal includes full client-side HTML5 Canvas resizing automatically downscaling avatars seamlessly alongside integrated `navigator.mediaDevices` streams grabbing photos from your webcam entirely locally directly inside the viewport!
+- **Advanced Sibling & Spouse Reordering:** Adjust the specific birth-order index or timeline marriage sequences identically! Native index splicing dynamically reflows the flex-tree drawing hierarchy to match identical lateral layout specifications perfectly!
+- **Smart Global Search:** Featuring an expandable `Top Nav` search text-input that performs substring aliases, last name, and first name searches natively indexing your tree logic. Selecting any dropdown hit instantly triggers a custom transform component zooming straight over to focus/highlight that specific profile footprint securely across the canvas viewport!
+- **Zero-Backend LocalStorage Persistence:** Keeps things blazing fast! All layout arrays, profile avatars, aliasing data, and relation logic is persistently auto-saved client-side via uncompressed `localStorage`. Simply refresh or restart the app without losing bounds!
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 🎨 Design Palette & UI
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Constructed matching gorgeous elegant serif typographic standards (`Playfair Display`, `DM Sans`), integrating automated generational warm-natural palettes mapping the CSS structural borders intelligently ensuring different tiers of ancestors carry distinctly beautiful cohesive coloring automatically separating parents from descendants gracefully!
 
-## Learn More
+### 🔧 Tech Stack
+- React 18 / Next.js
+- TypeScript strictly typing relation mapping (Gender, Generation, Recursive Computed Families)
+- `react-zoom-pan-pinch`
+- HTML5 Canvas & MediaDevices Stream API
 
-To learn more about Next.js, take a look at the following resources:
+### 🚀 Getting Started
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. Clone repo, install dependencies with `npm install`.
+2. Execute `npm run dev`.
+3. Open `http://localhost:3000` to start charting out the lineage!

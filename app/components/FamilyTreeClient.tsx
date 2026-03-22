@@ -8,9 +8,9 @@ import AddMemberModal from "./AddMemberModal";
 
 /* ── Helpers ──────────────────────────────────────────────────────── */
 function formatDate(iso: string): string {
-  if (!iso) return "Unknown";
+  if (!iso) return "Tidak Diketahui";
   const [y, m, d] = iso.split("-");
-  const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  const months = ["Jan","Feb","Mar","Apr","Mei","Jun","Jul","Agu","Sep","Okt","Nov","Des"];
   return `${parseInt(d)} ${months[parseInt(m) - 1]} ${y}`;
 }
 
@@ -62,6 +62,15 @@ const genPalette: Record<Generation, {
   },
 };
 
+const GEN_DIMS: Record<Generation, {
+  cardW: number; avatar: number; fontLg: number; fontMd: number; fontSm: number; icon: number;
+}> = {
+  4: { cardW: 192, avatar: 64, fontLg: 16, fontMd: 13, fontSm: 11, icon: 14 },
+  3: { cardW: 172, avatar: 56, fontLg: 15, fontMd: 12, fontSm: 11, icon: 13 },
+  2: { cardW: 152, avatar: 48, fontLg: 13, fontMd: 11, fontSm: 10, icon: 12 },
+  1: { cardW: 132, avatar: 40, fontLg: 11, fontMd:  9, fontSm:  9, icon: 10 },
+};
+
 const GEN_HEADING: Record<Generation, string> = {
   4: "Generasi 0",
   3: "Generasi 1",
@@ -70,42 +79,42 @@ const GEN_HEADING: Record<Generation, string> = {
 };
 
 /* ── Gender icon ──────────────────────────────────────────────────── */
-function GenderIcon({ gender }: { gender: Gender }) {
+function GenderIcon({ gender, size = 12 }: { gender: Gender; size?: number }) {
   if (gender === "male") return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
-         style={{ width: 12, height: 12 }} aria-label="Male">
+         style={{ width: size, height: size }} aria-label="Male">
       <circle cx="10" cy="14" r="5" />
       <path d="M19 5l-5.5 5.5M19 5h-5M19 5v5" strokeLinecap="round" strokeLinejoin="round"/>
     </svg>
   );
   if (gender === "female") return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
-         style={{ width: 12, height: 12 }} aria-label="Female">
+         style={{ width: size, height: size }} aria-label="Female">
       <circle cx="12" cy="8" r="5" />
       <path d="M12 13v8M9 18h6" strokeLinecap="round" strokeLinejoin="round"/>
     </svg>
   );
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
-         style={{ width: 12, height: 12 }} aria-label="Other">
+         style={{ width: size, height: size }} aria-label="Other">
       <circle cx="12" cy="12" r="5" />
     </svg>
   );
 }
 
 /* ── Avatar ───────────────────────────────────────────────────────── */
-function Avatar({ person }: { person: Person }) {
+function Avatar({ person, size, fontSize }: { person: Person; size: number; fontSize: number }) {
   const p = genPalette[person.generation];
   const initials = (person.firstName[0] + (person.lastName ? person.lastName[0] : "")).toUpperCase();
   return (
     <div style={{
-      width: 48, height: 48,
+      width: size, height: size,
       borderRadius: "50%",
       background: p.avatarBg,
       color: p.avatarText,
       display: "flex", alignItems: "center", justifyContent: "center",
       fontFamily: "'Playfair Display', serif",
-      fontSize: 15,
+      fontSize: fontSize,
       fontWeight: 500,
       margin: "0 auto 10px",
       border: `1.5px solid ${p.cardBorder}`,
@@ -127,16 +136,17 @@ function PersonCard({ person, onEdit, onQuickAdd }: { person: Person; onEdit?: (
   const [activeZone, setActiveZone] = useState<string | null>(null);
 
   const p = genPalette[person.generation];
+  const dims = GEN_DIMS[person.generation];
   const genderColor =
     person.gender === "male" ? "#3b82f6" :
     person.gender === "female" ? "#ec4899" : "#8b5cf6";
   const genderLbl =
-    person.gender === "male" ? "Male" : person.gender === "female" ? "Female" : "Other";
+    person.gender === "male" ? "Laki-laki" : person.gender === "female" ? "Perempuan" : "Lainnya";
 
   return (
     <div 
       id={`person-node-${person.id}`}
-      style={{ position: "relative", width: 164 }}
+      style={{ position: "relative", width: dims.cardW }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
@@ -144,7 +154,7 @@ function PersonCard({ person, onEdit, onQuickAdd }: { person: Person; onEdit?: (
         onClick={() => onEdit?.(person)}
         style={{
           display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center",
-          padding: "18px 16px 16px", background: "#fff",
+          padding: "16px", background: "#fff",
           border: `1px solid ${p.cardBorder}`, borderTop: `3px solid ${p.accent}`,
           width: "100%", flexShrink: 0, cursor: "pointer",
           transition: "box-shadow 0.2s, transform 0.2s",
@@ -152,11 +162,11 @@ function PersonCard({ person, onEdit, onQuickAdd }: { person: Person; onEdit?: (
           transform: isHovered ? "translateY(-2px)" : "translateY(0)"
         }}
       >
-        <Avatar person={person} />
+        <Avatar person={person} size={dims.avatar} fontSize={dims.fontLg} />
 
       <p style={{
         fontFamily: "'Playfair Display', serif",
-        fontSize: 13,
+        fontSize: dims.fontLg,
         fontWeight: 500,
         color: "#1c1917",
         lineHeight: 1.3,
@@ -169,7 +179,7 @@ function PersonCard({ person, onEdit, onQuickAdd }: { person: Person; onEdit?: (
       {person.alias && (
         <p style={{
           fontFamily: "'DM Sans', sans-serif",
-          fontSize: 11,
+          fontSize: dims.fontMd,
           fontStyle: "italic",
           color: "#78716c",
           margin: 0,
@@ -184,18 +194,18 @@ function PersonCard({ person, onEdit, onQuickAdd }: { person: Person; onEdit?: (
       <div style={{ width: "100%", display: "flex", flexDirection: "column", gap: 5 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 6, color: "#a8a29e" }}>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
-               style={{ width: 11, height: 11, flexShrink: 0 }}>
+               style={{ width: dims.icon, height: dims.icon, flexShrink: 0 }}>
             <rect x="3" y="4" width="18" height="18" rx="2"/>
             <path d="M16 2v4M8 2v4M3 10h18" strokeLinecap="round"/>
           </svg>
-          <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 10, color: "#a8a29e" }}>
+          <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: dims.fontSm, color: "#a8a29e" }}>
             {formatDate(person.dateOfBirth)}
           </span>
         </div>
 
         <div style={{ display: "flex", alignItems: "center", gap: 6, color: genderColor }}>
-          <GenderIcon gender={person.gender} />
-          <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 10 }}>{genderLbl}</span>
+          <GenderIcon gender={person.gender} size={dims.icon} />
+          <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: dims.fontSm }}>{genderLbl}</span>
         </div>
 
         <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
@@ -205,10 +215,10 @@ function PersonCard({ person, onEdit, onQuickAdd }: { person: Person; onEdit?: (
           }} />
           <span style={{
             fontFamily: "'DM Sans', sans-serif",
-            fontSize: 10,
+            fontSize: dims.fontSm,
             color: person.isAlive ? "#15803d" : "#a8a29e",
           }}>
-            {person.isAlive ? "Alive" : "Deceased"}
+            {person.isAlive ? "Hidup" : "Meninggal"}
           </span>
         </div>
       </div>
@@ -228,11 +238,11 @@ function PersonCard({ person, onEdit, onQuickAdd }: { person: Person; onEdit?: (
               borderRadius: 20, padding: activeZone === "sibling" ? "6px 10px" : "6px 8px",
               display: "flex", alignItems: "center", justifyContent: "center",
               boxShadow: "0 2px 6px rgba(0,0,0,0.1)", cursor: "pointer", zIndex: 10,
-              fontFamily: "'DM Sans', sans-serif", fontSize: 11, fontWeight: 500,
+              fontFamily: "'DM Sans', sans-serif", fontSize: dims.fontSm, fontWeight: 500,
               transition: "all 0.15s", whiteSpace: "nowrap"
             }}
           >
-            {activeZone === "sibling" ? "+ Sibling" : "+"}
+            {activeZone === "sibling" ? "+ Saudara" : "+"}
           </button>
           
           {/* Bottom Right -> Spouse */}
@@ -246,11 +256,11 @@ function PersonCard({ person, onEdit, onQuickAdd }: { person: Person; onEdit?: (
               borderRadius: 20, padding: activeZone === "spouse" ? "6px 10px" : "6px 8px",
               display: "flex", alignItems: "center", justifyContent: "center",
               boxShadow: "0 2px 6px rgba(0,0,0,0.1)", cursor: "pointer", zIndex: 10,
-              fontFamily: "'DM Sans', sans-serif", fontSize: 11, fontWeight: 500,
+              fontFamily: "'DM Sans', sans-serif", fontSize: dims.fontSm, fontWeight: 500,
               transition: "all 0.15s", whiteSpace: "nowrap"
             }}
           >
-            {activeZone === "spouse" ? "+ Spouse" : "+"}
+            {activeZone === "spouse" ? "+ Pasangan" : "+"}
           </button>
 
           {/* Bottom Middle -> Descendant */}
@@ -264,11 +274,11 @@ function PersonCard({ person, onEdit, onQuickAdd }: { person: Person; onEdit?: (
               borderRadius: 20, padding: activeZone === "child" ? "6px 10px" : "6px 8px",
               display: "flex", alignItems: "center", justifyContent: "center",
               boxShadow: "0 2px 6px rgba(0,0,0,0.1)", cursor: "pointer", zIndex: 10,
-              fontFamily: "'DM Sans', sans-serif", fontSize: 11, fontWeight: 500,
+              fontFamily: "'DM Sans', sans-serif", fontSize: dims.fontSm, fontWeight: 500,
               transition: "all 0.15s", whiteSpace: "nowrap"
             }}
           >
-            {activeZone === "child" ? "+ Descendant" : "+"}
+            {activeZone === "child" ? "+ Keturunan" : "+"}
           </button>
         </>
       )}
@@ -279,6 +289,7 @@ function PersonCard({ person, onEdit, onQuickAdd }: { person: Person; onEdit?: (
 /* ── Add ghost card ───────────────────────────────────────────────── */
 function AddCard({ generation, onAdd }: { generation: Generation; onAdd: () => void }) {
   const p = genPalette[generation];
+  const dims = GEN_DIMS[generation];
   return (
     <button
       onClick={onAdd}
@@ -288,8 +299,8 @@ function AddCard({ generation, onAdd }: { generation: Generation; onAdd: () => v
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
-        width: 164,
-        padding: "18px 16px",
+        width: dims.cardW,
+        padding: "16px",
         background: "transparent",
         border: `1px dashed ${p.cardBorder}`,
         cursor: "pointer",
@@ -322,7 +333,7 @@ function AddCard({ generation, onAdd }: { generation: Generation; onAdd: () => v
         textTransform: "uppercase",
         color: "#a8a29e",
       }}>
-        Add {GEN_HEADING[generation].replace(/s$/, "")}
+        Tambah
       </span>
     </button>
   );
@@ -496,11 +507,12 @@ function buildTree(people: Person[]): ComputedFamily[] {
 }
 
 function TreeNode({ node, onEdit, onQuickAdd }: { node: ComputedFamily; onEdit?: (p: Person) => void, onQuickAdd?: (type: 'child'|'sibling'|'spouse', p: Person) => void }) {
+  const dims = GEN_DIMS[node.primary.generation];
   return (
     <li>
       <div style={{ display: "flex", gap: 12, alignItems: "center", justifyContent: "center" }}>
         {node.isDuplicatePrimary ? (
-           <div style={{ width: 164, height: 164, position: "relative" }}>
+           <div style={{ width: dims.cardW, height: dims.cardW, position: "relative" }}>
               <div style={{ position: "absolute", top: "50%", right: -12, width: "65%", height: 1.5, background: "#d6d3d1" }} />
            </div>
         ) : (
@@ -532,8 +544,8 @@ function Legend() {
     [genPalette[3].accent, "Generasi 1"],
     [genPalette[2].accent, "Generasi 2"],
     [genPalette[1].accent, "Generasi 3"],
-    ["#34d399", "Alive"],
-    ["#d6d3d1", "Deceased"],
+    ["#34d399", "Hidup"],
+    ["#d6d3d1", "Meninggal"],
   ];
   return (
     <div style={{
@@ -775,7 +787,7 @@ export default function FamilyTreeClient() {
                  <input 
                    autoFocus
                    type="text"
-                   placeholder="Search name..."
+                   placeholder="Cari nama..."
                    value={searchQuery}
                    onChange={e => setSearchQuery(e.target.value)}
                    onBlur={() => {
@@ -826,7 +838,7 @@ export default function FamilyTreeClient() {
                  boxShadow: "0 4px 12px rgba(0,0,0,0.05)", width: 240, padding: "12px 16px",
                  zIndex: 50, fontFamily: "'DM Sans', sans-serif", fontSize: 12, color: "#a8a29e", textAlign: "center"
                }}>
-                 No results found
+                 Tidak ada hasil
                </div>
             )}
           </div>
@@ -854,7 +866,7 @@ export default function FamilyTreeClient() {
             onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = "#44403c"; }}
           >
             <span style={{ fontSize: 16, lineHeight: 1 }}>+</span>
-            Add Member
+            Tambah Anggota
           </button>
         </div>
       </div>
@@ -904,11 +916,11 @@ export default function FamilyTreeClient() {
             {({ zoomIn, zoomOut, resetTransform }) => (
               <>
                 <div style={{ position: "absolute", bottom: 20, right: 20, zIndex: 10, display: "flex", flexDirection: "column", gap: 8, background: "#fff", padding: 8, borderRadius: 12, boxShadow: "0 2px 12px rgba(0,0,0,0.08)", border: "1px solid #e7e5e4" }}>
-                  <button onClick={() => zoomIn()} title="Zoom In" style={{ width: 32, height: 32, borderRadius: 8, background: "#fff", border: "none", cursor: "pointer", fontSize: 18, color: "#44403c", display: "flex", alignItems: "center", justifyContent: "center", transition: "background 0.15s" }} onMouseEnter={e => e.currentTarget.style.background = "#f5f4f2"} onMouseLeave={e => e.currentTarget.style.background = "transparent"}>+</button>
+                  <button onClick={() => zoomIn()} title="Perbesar" style={{ width: 32, height: 32, borderRadius: 8, background: "#fff", border: "none", cursor: "pointer", fontSize: 18, color: "#44403c", display: "flex", alignItems: "center", justifyContent: "center", transition: "background 0.15s" }} onMouseEnter={e => e.currentTarget.style.background = "#f5f4f2"} onMouseLeave={e => e.currentTarget.style.background = "transparent"}>+</button>
                   <div style={{ width: "100%", height: 1, background: "#e7e5e4" }} />
-                  <button onClick={() => zoomOut()} title="Zoom Out" style={{ width: 32, height: 32, borderRadius: 8, background: "#fff", border: "none", cursor: "pointer", fontSize: 18, color: "#44403c", display: "flex", alignItems: "center", justifyContent: "center", transition: "background 0.15s" }} onMouseEnter={e => e.currentTarget.style.background = "#f5f4f2"} onMouseLeave={e => e.currentTarget.style.background = "transparent"}>-</button>
+                  <button onClick={() => zoomOut()} title="Perkecil" style={{ width: 32, height: 32, borderRadius: 8, background: "#fff", border: "none", cursor: "pointer", fontSize: 18, color: "#44403c", display: "flex", alignItems: "center", justifyContent: "center", transition: "background 0.15s" }} onMouseEnter={e => e.currentTarget.style.background = "#f5f4f2"} onMouseLeave={e => e.currentTarget.style.background = "transparent"}>-</button>
                   <div style={{ width: "100%", height: 1, background: "#e7e5e4" }} />
-                  <button onClick={() => resetTransform()} title="Center Tree" style={{ width: 32, height: 32, borderRadius: 8, background: "#fff", border: "none", cursor: "pointer", fontSize: 16, color: "#44403c", display: "flex", alignItems: "center", justifyContent: "center", transition: "background 0.15s" }} onMouseEnter={e => e.currentTarget.style.background = "#f5f4f2"} onMouseLeave={e => e.currentTarget.style.background = "transparent"}>⌂</button>
+                  <button onClick={() => resetTransform()} title="Pusatkan" style={{ width: 32, height: 32, borderRadius: 8, background: "#fff", border: "none", cursor: "pointer", fontSize: 16, color: "#44403c", display: "flex", alignItems: "center", justifyContent: "center", transition: "background 0.15s" }} onMouseEnter={e => e.currentTarget.style.background = "#f5f4f2"} onMouseLeave={e => e.currentTarget.style.background = "transparent"}>⌂</button>
                 </div>
                 <TransformComponent wrapperStyle={{ width: "100%", height: "100%", cursor: "grab" }}>
                   <div className="family-tree" style={{ padding: "80px 120px", display: "inline-block", minWidth: "100%" }}>

@@ -43,8 +43,8 @@ function MultiSelectDropdown({
 }) {
   const [open, setOpen] = useState(false);
   const text = selected.length === 0 
-    ? "None" 
-    : selected.map(id => options.find(o => o.id === id)?.label || "Unknown").join(", ");
+    ? "Tidak Ada" 
+    : selected.map(id => options.find(o => o.id === id)?.label || "Tidak Diketahui").join(", ");
 
   return (
     <div style={{ position: "relative" }}>
@@ -69,7 +69,7 @@ function MultiSelectDropdown({
              background: "#fff", border: "1px solid #e7e5e4", boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
              maxHeight: 160, overflowY: "auto"
            }}>
-             {options.length === 0 && <div style={{ padding: "8px 12px", fontSize: 13, color: "#a8a29e" }}>No valid relatives</div>}
+             {options.length === 0 && <div style={{ padding: "8px 12px", fontSize: 13, color: "#a8a29e" }}>Tidak ada kerabat yang sesuai</div>}
              {options.map(o => (
                <label key={o.id} style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 12px", fontSize: 13, color: "#44403c", cursor: "pointer", borderBottom: "1px solid #f5f4f2", margin: 0 }}>
                  <input
@@ -107,7 +107,7 @@ export default function AddMemberModal({ isOpen, onClose, onSave, onDelete, onMo
       setIsCameraOpen(true);
     } catch (err) {
       console.error("Error accessing camera:", err);
-      alert("Could not access camera. Please check permissions.");
+      alert("Kamera tidak dapat diakses. Periksa izin akses.");
     }
   }
 
@@ -190,7 +190,7 @@ export default function AddMemberModal({ isOpen, onClose, onSave, onDelete, onMo
 
   function handleSubmit(e: FormEvent) {
     e.preventDefault();
-    if (!form.firstName.trim()) { setError("First name is required.");    return; }
+    if (!form.firstName.trim()) { setError("Nama depan wajib diisi.");    return; }
 
     const person: Person = {
       id:          editPerson ? editPerson.id : `${Date.now()}-${Math.random().toString(36).slice(2)}`,
@@ -349,7 +349,7 @@ export default function AddMemberModal({ isOpen, onClose, onSave, onDelete, onMo
           <div className="flex items-start justify-between px-10 pt-6 pb-6" style={{ flexShrink: 0 }}>
             <div>
               <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: 20, fontWeight: 500, marginTop: 10, marginLeft: 32, color: "#1c1917", letterSpacing: "-0.01em"}}>
-                {editPerson ? "Edit Family Member" : "Add Family Member"}
+                {editPerson ? "Edit Anggota Keluarga" : "Tambah Anggota Keluarga"}
               </h2>
             </div>
             <button
@@ -406,17 +406,17 @@ export default function AddMemberModal({ isOpen, onClose, onSave, onDelete, onMo
 
               {isCameraOpen ? (
                 <div style={{ display: "flex", gap: 8 }}>
-                  <button type="button" onClick={capturePhoto} style={{ fontSize: 11, padding: "4px 12px", background: "#44403c", color: "#fff", border: "none", borderRadius: 4, cursor: "pointer", fontFamily: "'DM Sans', sans-serif" }}>Snap</button>
-                  <button type="button" onClick={stopCamera} style={{ fontSize: 11, padding: "4px 12px", background: "#f5f4f2", color: "#44403c", border: "1px solid #d6d3d1", borderRadius: 4, cursor: "pointer", fontFamily: "'DM Sans', sans-serif" }}>Cancel</button>
+                  <button type="button" onClick={capturePhoto} style={{ fontSize: 11, padding: "4px 12px", background: "#44403c", color: "#fff", border: "none", borderRadius: 4, cursor: "pointer", fontFamily: "'DM Sans', sans-serif" }}>Potret</button>
+                  <button type="button" onClick={stopCamera} style={{ fontSize: 11, padding: "4px 12px", background: "#f5f4f2", color: "#44403c", border: "1px solid #d6d3d1", borderRadius: 4, cursor: "pointer", fontFamily: "'DM Sans', sans-serif" }}>Batal</button>
                 </div>
               ) : (
                 <div style={{ display: "flex", gap: 12, justifyContent: "center" }}>
                   <label style={{ fontSize: 11, color: "#78716c", fontFamily: "'DM Sans', sans-serif", cursor: "pointer" }}>
                     <input type="file" accept="image/*" onChange={handleFileChange} style={{ display: "none" }} />
-                    Upload File
+                    Unggah File
                   </label>
                   <span onClick={(e) => { e.preventDefault(); startCamera(); }} style={{ fontSize: 11, color: "#78716c", fontFamily: "'DM Sans', sans-serif", cursor: "pointer" }}>
-                    Take Photo
+                    Ambil Foto
                   </span>
                   {form.imageUrl && (
                     <span
@@ -426,7 +426,7 @@ export default function AddMemberModal({ isOpen, onClose, onSave, onDelete, onMo
                       }}
                       style={{ fontSize: 11, color: "#ef4444", fontFamily: "'DM Sans', sans-serif", cursor: "pointer" }}
                     >
-                      Remove
+                      Hapus
                     </span>
                   )}
                 </div>
@@ -435,7 +435,7 @@ export default function AddMemberModal({ isOpen, onClose, onSave, onDelete, onMo
 
             {/* Generation */}
             <div>
-              <label className="amm-label">Generation</label>
+              <label className="amm-label">Generasi</label>
               <select
                 value={form.generation}
                 onChange={(e) => setForm({ 
@@ -455,22 +455,22 @@ export default function AddMemberModal({ isOpen, onClose, onSave, onDelete, onMo
             {/* Name */}
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
               <div>
-                <label htmlFor="firstName" className="amm-label">First Name</label>
+                <label htmlFor="firstName" className="amm-label">Nama Depan</label>
                 <input
                   id="firstName"
                   type="text"
-                  placeholder="e.g. John"
+                  placeholder="mis. Budi"
                   value={form.firstName}
                   onChange={(e) => setForm({ ...form, firstName: e.target.value })}
                   className={inputClass}
                 />
               </div>
               <div>
-                <label htmlFor="lastName" className="amm-label">Last Name</label>
+                <label htmlFor="lastName" className="amm-label">Nama Belakang</label>
                 <input
                   id="lastName"
                   type="text"
-                  placeholder="e.g. Smith"
+                  placeholder="mis. Santoso"
                   value={form.lastName}
                   onChange={(e) => setForm({ ...form, lastName: e.target.value })}
                   className={inputClass}
@@ -480,11 +480,11 @@ export default function AddMemberModal({ isOpen, onClose, onSave, onDelete, onMo
 
             {/* Alias */}
             <div>
-              <label htmlFor="alias" className="amm-label">Alias (Optional)</label>
+              <label htmlFor="alias" className="amm-label">Alias (Opsional)</label>
               <input
                 id="alias"
                 type="text"
-                placeholder="e.g. Nickname, known as, etc."
+                placeholder="mis. Nama panggilan, dll."
                 value={form.alias}
                 onChange={(e) => setForm({ ...form, alias: e.target.value })}
                 className={inputClass}
@@ -493,7 +493,7 @@ export default function AddMemberModal({ isOpen, onClose, onSave, onDelete, onMo
 
             {/* Date of Birth */}
             <div>
-              <label htmlFor="dob" className="amm-label">Date of Birth</label>
+              <label htmlFor="dob" className="amm-label">Tanggal Lahir</label>
               <input
                 id="dob"
                 type="date"
@@ -505,7 +505,7 @@ export default function AddMemberModal({ isOpen, onClose, onSave, onDelete, onMo
 
             {/* Gender */}
             <div>
-              <label className="amm-label">Gender</label>
+              <label className="amm-label">Jenis Kelamin</label>
               <div style={{ display: "flex", gap: 8 }}>
                 {(["male", "female"] as Gender[]).map((g) => (
                   <button
@@ -514,7 +514,7 @@ export default function AddMemberModal({ isOpen, onClose, onSave, onDelete, onMo
                     onClick={() => setForm({ ...form, gender: g })}
                     className={`amm-toggle-btn ${form.gender === g ? `active-${g}` : ""}`}
                   >
-                    {g.charAt(0).toUpperCase() + g.slice(1)}
+                    {g === "male" ? "Laki-laki" : "Perempuan"}
                   </button>
                 ))}
               </div>
@@ -522,7 +522,7 @@ export default function AddMemberModal({ isOpen, onClose, onSave, onDelete, onMo
 
             {/* Vital Status */}
             <div>
-              <label className="amm-label">Vital Status</label>
+              <label className="amm-label">Status</label>
               <div style={{ display: "flex", gap: 8 }}>
                 {[true, false].map((alive) => (
                   <button
@@ -531,7 +531,7 @@ export default function AddMemberModal({ isOpen, onClose, onSave, onDelete, onMo
                     onClick={() => setForm({ ...form, isAlive: alive })}
                     className={`amm-toggle-btn ${form.isAlive === alive ? (alive ? "active-alive" : "active-deceased") : ""}`}
                   >
-                    {alive ? "Alive" : "Deceased"}
+                    {alive ? "Hidup" : "Meninggal"}
                   </button>
                 ))}
               </div>
@@ -540,7 +540,7 @@ export default function AddMemberModal({ isOpen, onClose, onSave, onDelete, onMo
             {/* Parents & Spouses */}
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
               <MultiSelectDropdown
-                label="Parents"
+                label="Orang Tua"
                 options={people
                   .filter(p => p.generation === form.generation + 1)
                   .map(p => ({ id: p.id, label: `${p.firstName} ${p.lastName || ""}`.trim() }))}
@@ -548,7 +548,7 @@ export default function AddMemberModal({ isOpen, onClose, onSave, onDelete, onMo
                 onChange={vals => setForm({ ...form, parents: vals })}
               />
               <MultiSelectDropdown
-                label="Spouses"
+                label="Pasangan"
                 options={people
                   .filter(p => {
                     if (p.id === editPerson?.id) return false;
@@ -570,15 +570,15 @@ export default function AddMemberModal({ isOpen, onClose, onSave, onDelete, onMo
             {/* Sibling Order */}
             {editPerson && (
               <div style={{ padding: "16px", background: "#f5f4f2", border: "1px solid #e7e5e4" }}>
-                <label className="amm-label" style={{ marginBottom: 12 }}>Sibling Position (Left to Right)</label>
+                <label className="amm-label" style={{ marginBottom: 12 }}>Posisi Saudara (Kiri ke Kanan)</label>
                 {(() => {
                   const myParents = JSON.stringify([...(form.parents ?? [])].sort());
                   if (myParents === "[]") {
-                    return <div style={{ fontSize: 13, color: "#a8a29e" }}>Add parents to arrange siblings.</div>;
+                    return <div style={{ fontSize: 13, color: "#a8a29e" }}>Tambahkan orang tua untuk menyusun urutan anak.</div>;
                   }
                   const siblings = people.filter(p => p.generation === form.generation && JSON.stringify([...(p.parents ?? [])].sort()) === myParents);
                   if (siblings.length <= 1) {
-                    return <div style={{ fontSize: 13, color: "#a8a29e" }}>No other siblings in this parent group.</div>;
+                    return <div style={{ fontSize: 13, color: "#a8a29e" }}>Tidak ada saudara lain di keluarga ini.</div>;
                   }
                   
                   const myIndex = siblings.findIndex(s => s.id === editPerson.id);
@@ -586,7 +586,7 @@ export default function AddMemberModal({ isOpen, onClose, onSave, onDelete, onMo
 
                   return (
                     <div style={{ display: "flex", alignItems: "center", gap: 12, fontSize: 13, color: "#44403c" }}>
-                      <span>Position:</span>
+                      <span>Urutan:</span>
                       <input
                         type="number"
                         min={1}
@@ -607,7 +607,7 @@ export default function AddMemberModal({ isOpen, onClose, onSave, onDelete, onMo
                           outline: "none"
                         }}
                       />
-                      <span style={{ color: "#a8a29e" }}>out of {siblings.length} siblings</span>
+                      <span style={{ color: "#a8a29e" }}>dari {siblings.length} saudara</span>
                     </div>
                   );
                 })()}
@@ -632,10 +632,10 @@ export default function AddMemberModal({ isOpen, onClose, onSave, onDelete, onMo
                   return (
                     <div key={polySpouse.id} style={{ padding: "16px", background: "#f5f4f2", border: "1px solid #e7e5e4" }}>
                       <label className="amm-label" style={{ marginBottom: 12 }}>
-                        Marriage Order (with {polySpouse.firstName} {polySpouse.lastName})
+                        Urutan Pernikahan (dengan {polySpouse.firstName} {polySpouse.lastName})
                       </label>
                       <div style={{ display: "flex", alignItems: "center", gap: 12, fontSize: 13, color: "#44403c" }}>
-                        <span>Position:</span>
+                        <span>Urutan:</span>
                         <input
                           type="number"
                           min={1}
@@ -652,7 +652,7 @@ export default function AddMemberModal({ isOpen, onClose, onSave, onDelete, onMo
                             fontFamily: "'DM Sans', sans-serif", fontSize: 13, outline: "none"
                           }}
                         />
-                        <span style={{ color: "#a8a29e" }}>out of {theirSpouses.length} spouses</span>
+                        <span style={{ color: "#a8a29e" }}>dari {theirSpouses.length} pasangan</span>
                       </div>
                     </div>
                   );
@@ -679,7 +679,7 @@ export default function AddMemberModal({ isOpen, onClose, onSave, onDelete, onMo
                 <button
                   type="button"
                   onClick={() => {
-                    if (confirm("Are you sure you want to delete this person?")) {
+                    if (confirm("Anda yakin ingin menghapus orang ini?")) {
                       onDelete(editPerson.id);
                     }
                   }}
@@ -699,7 +699,7 @@ export default function AddMemberModal({ isOpen, onClose, onSave, onDelete, onMo
                   onMouseEnter={e => { e.currentTarget.style.background = "#fee2e2"; }}
                   onMouseLeave={e => { e.currentTarget.style.background = "#fef2f2"; }}
                 >
-                  Delete
+                  Hapus
                 </button>
               )}
               <button
@@ -721,7 +721,7 @@ export default function AddMemberModal({ isOpen, onClose, onSave, onDelete, onMo
                 onMouseEnter={e => { e.currentTarget.style.background = "#fafaf9"; e.currentTarget.style.color = "#44403c"; }}
                 onMouseLeave={e => { e.currentTarget.style.background = "none"; e.currentTarget.style.color = "#78716c"; }}
               >
-                Cancel
+                Batal
               </button>
               <button
                 type="submit"
@@ -742,7 +742,7 @@ export default function AddMemberModal({ isOpen, onClose, onSave, onDelete, onMo
                 onMouseEnter={e => { e.currentTarget.style.background = "#1c1917"; }}
                 onMouseLeave={e => { e.currentTarget.style.background = "#44403c"; }}
               >
-                {editPerson ? "Save Changes" : "Add Member"}
+                {editPerson ? "Simpan Perubahan" : "Tambah Anggota"}
               </button>
             </div>
           </form>

@@ -19,6 +19,7 @@ An elegant, highly interactive, client-side family tree building application. De
 Constructed matching gorgeous elegant serif typographic standards (`Playfair Display`, `DM Sans`), integrating automated generational warm-natural palettes mapping the CSS structural borders intelligently ensuring different tiers of ancestors carry distinctly beautiful cohesive coloring automatically separating parents from descendants gracefully!
 
 ### 🔧 Tech Stack
+
 - React 18 / Next.js
 - TypeScript strictly typing relation mapping (Gender, Generation, Recursive Computed Families)
 - `react-zoom-pan-pinch`

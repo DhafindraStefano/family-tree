@@ -897,10 +897,6 @@ export default function FamilyTreeClient() {
           }}>
             Keluarga Ikadam
           </h1>
-          <div style={{
-            width: 40, height: 2, background: "#44403c",
-            margin: "16px auto 0",
-          }} />
         </header>
 
         {/* Tree Canvas */}

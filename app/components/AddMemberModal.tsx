@@ -96,54 +96,78 @@ export default function AddMemberModal({ isOpen, onClose, onSave, onDelete, onMo
   const [error, setError] = useState("");
   const [isCameraOpen, setIsCameraOpen] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const streamRef = useRef<MediaStream | null>(null);
 
-  async function startCamera() {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-        videoRef.current.play();
-      }
-      setIsCameraOpen(true);
-    } catch (err) {
-      console.error("Error accessing camera:", err);
-      alert("Kamera tidak dapat diakses. Periksa izin akses.");
+async function startCamera() {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
+    streamRef.current = stream;
+    if (videoRef.current) {
+      videoRef.current.srcObject = stream;
+      await new Promise<void>((resolve, reject) => {
+        videoRef.current!.onloadedmetadata = () => resolve();
+        videoRef.current!.onerror = reject;
+      });
+      await videoRef.current.play();
     }
+    setIsCameraOpen(true);
+  } catch (err) {
+    console.error("Error accessing camera:", err);
+    alert("Kamera tidak dapat diakses. Periksa izin akses.");
   }
+}
 
   function stopCamera() {
-    if (videoRef.current && videoRef.current.srcObject) {
-      const stream = videoRef.current.srcObject as MediaStream;
-      stream.getTracks().forEach(track => track.stop());
+    // Stop all tracks via the stored stream ref
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach(track => track.stop());
+      streamRef.current = null;
+    }
+    if (videoRef.current) {
       videoRef.current.srcObject = null;
     }
     setIsCameraOpen(false);
   }
 
   function capturePhoto() {
-    if (!videoRef.current) return;
+  if (!videoRef.current) return;
+  const video = videoRef.current;
+
+  // Wait for a real frame to be available
+  requestAnimationFrame(() => {
     const canvas = document.createElement("canvas");
     const size = 160;
     canvas.width = size;
     canvas.height = size;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
-    
-    const v = videoRef.current;
-    const minDim = Math.min(v.videoWidth, v.videoHeight);
-    const srcX = (v.videoWidth - minDim) / 2;
-    const srcY = (v.videoHeight - minDim) / 2;
-    
-    ctx.drawImage(v, srcX, srcY, minDim, minDim, 0, 0, size, size);
+
+    const minDim = Math.min(video.videoWidth, video.videoHeight);
+    const srcX = (video.videoWidth - minDim) / 2;
+    const srcY = (video.videoHeight - minDim) / 2;
+
+    ctx.drawImage(video, srcX, srcY, minDim, minDim, 0, 0, size, size);
     setForm(prev => ({ ...prev, imageUrl: canvas.toDataURL("image/jpeg", 0.7) }));
     stopCamera();
-  }
+  });
+}
 
+  // Stop camera when component unmounts
   useEffect(() => {
     return () => {
-      stopCamera();
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach(track => track.stop());
+        streamRef.current = null;
+      }
     };
   }, []);
+
+  // Stop camera when modal closes
+  useEffect(() => {
+    if (!isOpen) {
+      stopCamera();
+    }
+  }, [isOpen]);
 
   useEffect(() => {
     if (isOpen) {
@@ -383,11 +407,23 @@ export default function AddMemberModal({ isOpen, onClose, onSave, onDelete, onMo
 
             {/* Photo */}
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8, marginBottom: -10 }}>
-              {isCameraOpen ? (
-                <div style={{ width: 120, height: 120, borderRadius: "50%", background: "#000", overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                  <video ref={videoRef} autoPlay playsInline muted style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                </div>
-              ) : (
+
+              {/* Video element is ALWAYS in DOM so videoRef is available before isCameraOpen is true */}
+              <div style={{
+                width: 120, height: 120, borderRadius: "50%",
+                background: "#000", overflow: "hidden",
+                display: isCameraOpen ? "flex" : "none",
+                alignItems: "center", justifyContent: "center"
+              }}>
+                <video
+                  ref={videoRef}
+                  playsInline
+                  muted
+                  style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                />
+              </div>
+
+              {!isCameraOpen && (
                 <div style={{
                   width: 80, height: 80, borderRadius: "50%",
                   background: "#f5f4f2", border: "1px dashed #d6d3d1",

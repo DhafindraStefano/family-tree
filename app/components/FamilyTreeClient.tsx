@@ -406,6 +406,8 @@ const treeStyles = `
 
 body, html {
   background: #faf9f7 !important;
+  overflow: hidden;
+  height: 100%;
 }
 
 .ftc-page {
@@ -951,35 +953,11 @@ export default function FamilyTreeClient() {
       </div>
 
       {/* Page content */}
-      <div style={{ paddingTop: 56, minHeight: "100vh" }}>
-
-        {/* Header */}
-        <header style={{ textAlign: "center", padding: "56px 24px 40px" }}>
-          <p style={{
-            fontFamily: "'DM Sans', sans-serif",
-            fontSize: 10,
-            fontWeight: 500,
-            letterSpacing: "0.15em",
-            textTransform: "uppercase",
-            color: "#a8a29e",
-            marginBottom: 10,
-          }}>
-            Family Tree
-          </p>
-          <h1 style={{
-            fontFamily: "'Playfair Display', serif",
-            fontSize: 36,
-            fontWeight: 500,
-            color: "#1c1917",
-            letterSpacing: "-0.02em",
-            margin: 0,
-          }}>
-            Keluarga Ikadam
-          </h1>
-        </header>
+      <div style={{ paddingTop: 56, height: "100vh", overflow: "hidden", display: "flex", flexDirection: "column" }}
+      >
 
         {/* Tree Canvas */}
-        <div style={{ width: "100%", height: "calc(100vh - 56px)", position: "relative", background: "#fdfdfb", overflow: "hidden", border: "1px solid #e7e5e4", margin: "0 auto", maxWidth: "100%" }}>
+        <div style={{ flex: 1, position: "relative", background: "#fdfdfb", overflow: "hidden" }}>
           <TransformWrapper
             ref={transformRef}
             initialScale={1}

@@ -1,4 +1,4 @@
-import FamilyTreeClient from "./components/FamilyTreeClient";
+import FamilyTreeClient from "./components/tree/FamilyTreeClient";
 
 export default function Home() {
   return (

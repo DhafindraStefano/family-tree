@@ -136,6 +136,26 @@ function Avatar({ person, size, fontSize }: { person: Person; size: number; font
 function PersonCard({ person, onEdit, onQuickAdd }: { person: Person; onEdit?: (p: Person) => void; onQuickAdd?: (type: 'child'|'sibling'|'sibling-before'|'spouse', p: Person) => void }) {
   const [isHovered, setIsHovered] = useState(false);
   const [activeZone, setActiveZone] = useState<string | null>(null);
+  const [isTapped, setIsTapped] = useState(false);
+  const cardRef = useRef<HTMLDivElement>(null);
+
+  // Dismiss tap-selection when user taps elsewhere
+  useEffect(() => {
+    if (!isTapped) return;
+    function handleOutside(e: TouchEvent | MouseEvent) {
+      if (cardRef.current && !cardRef.current.contains(e.target as Node)) {
+        setIsTapped(false);
+      }
+    }
+    document.addEventListener("touchstart", handleOutside);
+    document.addEventListener("mousedown", handleOutside);
+    return () => {
+      document.removeEventListener("touchstart", handleOutside);
+      document.removeEventListener("mousedown", handleOutside);
+    };
+  }, [isTapped]);
+
+  const showButtons = isHovered || isTapped;
 
   const p = genPalette[person.generation];
   const dims = GEN_DIMS[person.generation];
@@ -147,13 +167,34 @@ function PersonCard({ person, onEdit, onQuickAdd }: { person: Person; onEdit?: (
 
   return (
     <div 
+      ref={cardRef}
       id={`person-node-${person.id}`}
       style={{ position: "relative", width: dims.cardW }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
       <div 
-        onClick={() => onEdit?.(person)}
+        onClick={() => {
+          if (isTapped) {
+            // Second tap -> open edit
+            setIsTapped(false);
+            onEdit?.(person);
+          } else {
+            // First tap on touch, or regular click on desktop
+            setIsTapped(true);
+            onEdit?.(person);
+          }
+        }}
+        onTouchStart={(e) => {
+          // On touch: first touch shows quick-add buttons, doesn't open edit
+          if (!isTapped) {
+            e.preventDefault();
+            setIsTapped(true);
+          } else {
+            setIsTapped(false);
+            onEdit?.(person);
+          }
+        }}
         style={{
           display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center",
           padding: "16px", background: "#fff",
@@ -227,7 +268,7 @@ function PersonCard({ person, onEdit, onQuickAdd }: { person: Person; onEdit?: (
       </div>
 
       { /* Quick Add Buttons */ }
-      {isHovered && (
+      {showButtons && (
         <>
           {/* Top Left -> Sibling Before */}
           <button
@@ -424,6 +465,15 @@ body, html {
   border-left: 1.5px solid #d6d3d1;
   width: 0; height: 36px;
   margin-left: -1px;
+}
+
+/* Mobile tweaks */
+@media (max-width: 600px) {
+  .add-btn-label { display: none; }
+  .family-tree li { padding: 28px 8px 0 8px; }
+  .family-tree ul { padding-top: 28px; }
+  .family-tree ul ul::before { height: 28px; }
+  .family-tree li::before, .family-tree li::after { height: 28px; }
 }
 `;
 
@@ -768,15 +818,19 @@ export default function FamilyTreeClient() {
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
-        padding: "0 32px",
-        height: 60,
+        padding: "0 16px",
+        height: 56,
       }}>
         <span style={{
           fontFamily: "'Playfair Display', serif",
-          fontSize: 16,
+          fontSize: 15,
           fontWeight: 500,
           color: "#44403c",
           letterSpacing: "-0.01em",
+          whiteSpace: "nowrap",
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+          maxWidth: 140,
         }}>
           Keluarga Ikadam
         </span>
@@ -873,8 +927,8 @@ export default function FamilyTreeClient() {
             style={{
               display: "flex",
               alignItems: "center",
-              gap: 8,
-              padding: "8px 18px",
+              gap: 6,
+              padding: "8px 14px",
               fontFamily: "'DM Sans', sans-serif",
               fontSize: 13,
               fontWeight: 500,
@@ -885,18 +939,19 @@ export default function FamilyTreeClient() {
               cursor: "pointer",
               transition: "background 0.15s",
               borderRadius: 20,
+              flexShrink: 0,
             }}
             onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = "#1c1917"; }}
             onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = "#44403c"; }}
           >
-            <span style={{ fontSize: 16, lineHeight: 1 }}>+</span>
-            Tambah Anggota
+            <span style={{ fontSize: 18, lineHeight: 1 }}>+</span>
+            <span className="add-btn-label">Tambah Anggota</span>
           </button>
         </div>
       </div>
 
       {/* Page content */}
-      <div style={{ paddingTop: 60, paddingBottom: 80, minHeight: "100vh" }}>
+      <div style={{ paddingTop: 56, minHeight: "100vh" }}>
 
         {/* Header */}
         <header style={{ textAlign: "center", padding: "56px 24px 40px" }}>
@@ -924,7 +979,7 @@ export default function FamilyTreeClient() {
         </header>
 
         {/* Tree Canvas */}
-        <div style={{ width: "100%", height: "calc(100vh - 240px)", position: "relative", background: "#fdfdfb", borderRadius: "16px", overflow: "hidden", border: "1px solid #e7e5e4", margin: "0 auto", maxWidth: "98%", boxShadow: "inset 0 2px 10px rgba(0,0,0,0.02)" }}>
+        <div style={{ width: "100%", height: "calc(100vh - 56px)", position: "relative", background: "#fdfdfb", overflow: "hidden", border: "1px solid #e7e5e4", margin: "0 auto", maxWidth: "100%" }}>
           <TransformWrapper
             ref={transformRef}
             initialScale={1}
@@ -935,12 +990,10 @@ export default function FamilyTreeClient() {
           >
             {({ zoomIn, zoomOut, resetTransform }) => (
               <>
-                <div style={{ position: "absolute", bottom: 20, right: 20, zIndex: 10, display: "flex", flexDirection: "column", gap: 8, background: "#fff", padding: 8, borderRadius: 12, boxShadow: "0 2px 12px rgba(0,0,0,0.08)", border: "1px solid #e7e5e4" }}>
-                  <button onClick={() => zoomIn()} title="Perbesar" style={{ width: 32, height: 32, borderRadius: 8, background: "#fff", border: "none", cursor: "pointer", fontSize: 18, color: "#44403c", display: "flex", alignItems: "center", justifyContent: "center", transition: "background 0.15s" }} onMouseEnter={e => e.currentTarget.style.background = "#f5f4f2"} onMouseLeave={e => e.currentTarget.style.background = "transparent"}>+</button>
-                  <div style={{ width: "100%", height: 1, background: "#e7e5e4" }} />
-                  <button onClick={() => zoomOut()} title="Perkecil" style={{ width: 32, height: 32, borderRadius: 8, background: "#fff", border: "none", cursor: "pointer", fontSize: 18, color: "#44403c", display: "flex", alignItems: "center", justifyContent: "center", transition: "background 0.15s" }} onMouseEnter={e => e.currentTarget.style.background = "#f5f4f2"} onMouseLeave={e => e.currentTarget.style.background = "transparent"}>-</button>
-                  <div style={{ width: "100%", height: 1, background: "#e7e5e4" }} />
-                  <button onClick={() => resetTransform()} title="Pusatkan" style={{ width: 32, height: 32, borderRadius: 8, background: "#fff", border: "none", cursor: "pointer", fontSize: 16, color: "#44403c", display: "flex", alignItems: "center", justifyContent: "center", transition: "background 0.15s" }} onMouseEnter={e => e.currentTarget.style.background = "#f5f4f2"} onMouseLeave={e => e.currentTarget.style.background = "transparent"}>⌂</button>
+                <div style={{ position: "absolute", bottom: 20, right: 12, zIndex: 10, display: "flex", flexDirection: "column", gap: 0, background: "#fff", borderRadius: 14, boxShadow: "0 2px 12px rgba(0,0,0,0.10)", border: "1px solid #e7e5e4", overflow: "hidden" }}>
+                  <button onClick={() => zoomIn()} title="Perbesar" style={{ width: 44, height: 44, background: "#fff", border: "none", borderBottom: "1px solid #e7e5e4", cursor: "pointer", fontSize: 20, color: "#44403c", display: "flex", alignItems: "center", justifyContent: "center" }}>+</button>
+                  <button onClick={() => zoomOut()} title="Perkecil" style={{ width: 44, height: 44, background: "#fff", border: "none", borderBottom: "1px solid #e7e5e4", cursor: "pointer", fontSize: 20, color: "#44403c", display: "flex", alignItems: "center", justifyContent: "center" }}>−</button>
+                  <button onClick={() => resetTransform()} title="Pusatkan" style={{ width: 44, height: 44, background: "#fff", border: "none", cursor: "pointer", fontSize: 16, color: "#44403c", display: "flex", alignItems: "center", justifyContent: "center" }}>⌂</button>
                 </div>
                 <TransformComponent wrapperStyle={{ width: "100%", height: "100%", cursor: "grab" }}>
                   <div className="family-tree" style={{ padding: "80px 120px", display: "inline-block", minWidth: "100%" }}>

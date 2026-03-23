@@ -362,6 +362,15 @@ async function startCamera(overrideFacing?: 'user'|'environment') {
           color: #a8a29e;
           margin-bottom: 10px;
         }
+
+        @media (max-width: 600px) {
+          .amm-actions {
+            order: -1;
+            padding-top: 0 !important;
+            padding-bottom: 8px;
+            border-bottom: 1px dashed #e7e5e4;
+          }
+        }
       `}</style>
 
       <div
@@ -733,7 +742,7 @@ async function startCamera(overrideFacing?: 'user'|'environment') {
             )}
 
             {/* Actions */}
-            <div style={{ display: "flex", gap: 12, paddingTop: 4 }}>
+            <div className="amm-actions" style={{ display: "flex", gap: 12, paddingTop: 4 }}>
               {editPerson && onDelete && (
                 <button
                   type="button"

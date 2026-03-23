@@ -653,22 +653,49 @@ export default function FamilyTreeClient() {
   }, [searchQuery, people]);
 
   function handleSelectSearchResult(id: string) {
-     if (transformRef.current) {
-        transformRef.current.zoomToElement(`person-node-${id}`, 1.2, 400);
-        const el = document.getElementById(`person-node-${id}`);
-        if (el) {
-           el.style.transition = "box-shadow 0.3s";
-           el.style.boxShadow = "0 0 0 4px #fbbf24";
-           el.style.borderRadius = "12px";
-           setTimeout(() => { 
-              el.style.boxShadow = "none"; 
-              el.style.borderRadius = "0"; 
-           }, 2000);
-        }
-     }
-     setSearchQuery("");
-     setIsSearchExpanded(false);
+  const el = document.getElementById(`person-node-${id}`);
+  
+  if (el && transformRef.current) {
+    // Read position BEFORE closing dropdown (which could cause layout shifts)
+    const rect = el.getBoundingClientRect();
+    const wrapperEl = el.closest(".react-transform-wrapper") as HTMLElement;
+    
+    if (wrapperEl) {
+      const wrapperRect = wrapperEl.getBoundingClientRect();
+      const state = transformRef.current.instance.transformState;
+      const scale = state.scale;
+
+      // Calculate where the element is in the transform content space
+      const contentX = (rect.left - wrapperRect.left - state.positionX) / scale;
+      const contentY = (rect.top  - wrapperRect.top  - state.positionY) / scale;
+
+      // Target scale
+      const targetScale = 1.2;
+
+      // Center of viewport
+      const vpW = wrapperRect.width;
+      const vpH = wrapperRect.height;
+
+      const newX = vpW / 2 - (contentX + rect.width  / scale / 2) * targetScale;
+      const newY = vpH / 2 - (contentY + rect.height / scale / 2) * targetScale;
+
+      transformRef.current.setTransform(newX, newY, targetScale, 600, "easeOutCubic");
+    }
+
+    // Highlight ring
+    el.style.transition = "box-shadow 0.3s";
+    el.style.boxShadow = "0 0 0 4px #fbbf24";
+    el.style.borderRadius = "12px";
+    setTimeout(() => {
+      el.style.boxShadow = "none";
+      el.style.borderRadius = "0";
+    }, 2000);
   }
+
+  // Close dropdown AFTER capturing position
+  setSearchQuery("");
+  setIsSearchExpanded(false);
+}
 
   // ── Firestore sync ────────────────────────────────────────────────
   const TREE_DOC = doc(db, "familyTrees", "ikadam");
@@ -984,6 +1011,7 @@ export default function FamilyTreeClient() {
             minScale={0.1}
             maxScale={3}
             centerOnInit
+            limitToBounds={false}
             wheel={{ step: 0.1 }}
           >
             {({ zoomIn, zoomOut, resetTransform }) => (

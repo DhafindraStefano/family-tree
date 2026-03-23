@@ -100,7 +100,10 @@ export default function AddMemberModal({ isOpen, onClose, onSave, onDelete, onMo
 
 async function startCamera() {
   try {
-    const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
+    // Use rear camera on touch devices (mobile), front camera on desktop
+    const isTouchDevice = navigator.maxTouchPoints > 0;
+    const facingMode = isTouchDevice ? 'environment' : 'user';
+    const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode } });
     streamRef.current = stream;
     if (videoRef.current) {
       videoRef.current.srcObject = stream;

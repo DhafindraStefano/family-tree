@@ -407,51 +407,46 @@ export default function AddMemberModal({ isOpen, onClose, onSave, onDelete, onMo
             </div>
 
             {/* Sibling Order */}
-            {editPerson && (
-              <div style={{ padding: "16px", background: "#f5f4f2", border: "1px solid #e7e5e4" }}>
-                <label className="amm-label" style={{ marginBottom: 12 }}>Posisi Saudara (Kiri ke Kanan)</label>
-                {(() => {
-                  const myParents = JSON.stringify([...(form.parents ?? [])].sort());
-                  if (myParents === "[]") {
-                    return <div style={{ fontSize: 13, color: "#a8a29e" }}>Tambahkan orang tua untuk menyusun urutan anak.</div>;
-                  }
-                  const siblings = people.filter(p => p.generation === form.generation && JSON.stringify([...(p.parents ?? [])].sort()) === myParents);
-                  if (siblings.length <= 1) {
-                    return <div style={{ fontSize: 13, color: "#a8a29e" }}>Tidak ada saudara lain di keluarga ini.</div>;
-                  }
-                  
-                  const myIndex = siblings.findIndex(s => s.id === editPerson.id);
-                  const currentPosition = myIndex + 1;
+            {editPerson && (() => {
+              const myParents = JSON.stringify([...(form.parents ?? [])].sort());
+              if (myParents === "[]") return null;
+              
+              const siblings = people.filter(p => p.generation === form.generation && JSON.stringify([...(p.parents ?? [])].sort()) === myParents);
+              if (siblings.length <= 1) return null;
+              
+              const myIndex = siblings.findIndex(s => s.id === editPerson.id);
+              const currentPosition = myIndex + 1;
 
-                  return (
-                    <div style={{ display: "flex", alignItems: "center", gap: 12, fontSize: 13, color: "#44403c" }}>
-                      <span>Urutan:</span>
-                      <input
-                        type="number"
-                        min={1}
-                        max={siblings.length}
-                        value={currentPosition}
-                        onChange={e => {
-                          const val = Number(e.target.value);
-                          if (!isNaN(val) && val >= 1 && val <= siblings.length && onMoveSibling) {
-                            onMoveSibling(editPerson.id, val);
-                          }
-                        }}
-                        style={{
-                          width: 60,
-                          padding: "6px 8px",
-                          border: "1px solid #d6d3d1",
-                          fontFamily: "'DM Sans', sans-serif",
-                          fontSize: 13,
-                          outline: "none"
-                        }}
-                      />
-                      <span style={{ color: "#a8a29e" }}>dari {siblings.length} saudara</span>
-                    </div>
-                  );
-                })()}
-              </div>
-            )}
+              return (
+                <div style={{ padding: "16px", background: "#f5f4f2", border: "1px solid #e7e5e4" }}>
+                  <label className="amm-label" style={{ marginBottom: 12 }}>Posisi Saudara (Kiri ke Kanan)</label>
+                  <div style={{ display: "flex", alignItems: "center", gap: 12, fontSize: 13, color: "#44403c" }}>
+                    <span>Urutan:</span>
+                    <input
+                      type="number"
+                      min={1}
+                      max={siblings.length}
+                      value={currentPosition}
+                      onChange={e => {
+                        const val = Number(e.target.value);
+                        if (!isNaN(val) && val >= 1 && val <= siblings.length && onMoveSibling) {
+                          onMoveSibling(editPerson.id, val);
+                        }
+                      }}
+                      style={{
+                        width: 60,
+                        padding: "6px 8px",
+                        border: "1px solid #d6d3d1",
+                        fontFamily: "'DM Sans', sans-serif",
+                        fontSize: 13,
+                        outline: "none"
+                      }}
+                    />
+                    <span style={{ color: "#a8a29e" }}>dari {siblings.length} saudara</span>
+                  </div>
+                </div>
+              );
+            })()}
 
             {/* Spouse Order */}
             {editPerson && (() => {

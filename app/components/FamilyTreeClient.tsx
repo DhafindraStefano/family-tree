@@ -136,15 +136,17 @@ function Avatar({ person, size, fontSize }: { person: Person; size: number; font
 function PersonCard({ person, onEdit, onQuickAdd }: { person: Person; onEdit?: (p: Person) => void; onQuickAdd?: (type: 'child'|'sibling'|'sibling-before'|'spouse', p: Person) => void }) {
   const [isHovered, setIsHovered] = useState(false);
   const [activeZone, setActiveZone] = useState<string | null>(null);
-  const [isTapped, setIsTapped] = useState(false);
+  const [isHeld, setIsHeld] = useState(false);
+  const holdTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const wasHeldRef = useRef(false);
   const cardRef = useRef<HTMLDivElement>(null);
 
   // Dismiss tap-selection when user taps elsewhere
   useEffect(() => {
-    if (!isTapped) return;
+    if (!isHeld) return;
     function handleOutside(e: TouchEvent | MouseEvent) {
       if (cardRef.current && !cardRef.current.contains(e.target as Node)) {
-        setIsTapped(false);
+        setIsHeld(false);
       }
     }
     document.addEventListener("touchstart", handleOutside);
@@ -153,9 +155,9 @@ function PersonCard({ person, onEdit, onQuickAdd }: { person: Person; onEdit?: (
       document.removeEventListener("touchstart", handleOutside);
       document.removeEventListener("mousedown", handleOutside);
     };
-  }, [isTapped]);
+  }, [isHeld]);
 
-  const showButtons = isHovered || isTapped;
+  const showButtons = isHovered || isHeld;
 
   const p = genPalette[person.generation];
   const dims = GEN_DIMS[person.generation];
@@ -174,25 +176,43 @@ function PersonCard({ person, onEdit, onQuickAdd }: { person: Person; onEdit?: (
       onMouseLeave={() => setIsHovered(false)}
     >
       <div 
-        onClick={() => {
-          if (isTapped) {
-            // Second tap -> open edit
-            setIsTapped(false);
-            onEdit?.(person);
-          } else {
-            // First tap on touch, or regular click on desktop
-            setIsTapped(true);
-            onEdit?.(person);
+        onClick={(e) => {
+          // If this click is the result of releasing a long hold, ignore it
+          if (wasHeldRef.current) {
+            wasHeldRef.current = false;
+            e.preventDefault();
+            return;
+          }
+          // Normal tap -> immediately open edit
+          setIsHeld(false);
+          onEdit?.(person);
+        }}
+        onTouchStart={() => {
+          // Start hold timer
+          wasHeldRef.current = false;
+          if (!isHeld) {
+            holdTimerRef.current = setTimeout(() => {
+              setIsHeld(true);
+              wasHeldRef.current = true;
+              holdTimerRef.current = null;
+            }, 350); // 350ms hold to show menu
           }
         }}
-        onTouchStart={(e) => {
-          // On touch: first touch shows quick-add buttons, doesn't open edit
-          if (!isTapped) {
-            e.preventDefault();
-            setIsTapped(true);
-          } else {
-            setIsTapped(false);
-            onEdit?.(person);
+        onTouchEnd={() => {
+          if (holdTimerRef.current) {
+            clearTimeout(holdTimerRef.current);
+            holdTimerRef.current = null;
+          }
+        }}
+        onTouchMove={() => {
+          if (holdTimerRef.current) {
+            clearTimeout(holdTimerRef.current);
+            holdTimerRef.current = null;
+          }
+        }}
+        onContextMenu={(e) => {
+          if (typeof navigator !== 'undefined' && navigator.maxTouchPoints > 0) {
+            e.preventDefault(); // Prevent native browser context menu on mobile long-press
           }
         }}
         style={{

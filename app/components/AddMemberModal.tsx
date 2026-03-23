@@ -97,12 +97,20 @@ export default function AddMemberModal({ isOpen, onClose, onSave, onDelete, onMo
   const [isCameraOpen, setIsCameraOpen] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
+  const [cameraFacing, setCameraFacing] = useState<'user'|'environment'>('environment');
 
-async function startCamera() {
+  useEffect(() => {
+    if (typeof navigator !== 'undefined') {
+      setCameraFacing(navigator.maxTouchPoints > 0 ? 'environment' : 'user');
+    }
+  }, []);
+
+async function startCamera(overrideFacing?: 'user'|'environment') {
   try {
-    // Use rear camera on touch devices (mobile), front camera on desktop
-    const isTouchDevice = navigator.maxTouchPoints > 0;
-    const facingMode = isTouchDevice ? 'environment' : 'user';
+    const facingMode = overrideFacing || cameraFacing;
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach(track => track.stop());
+    }
     const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode } });
     streamRef.current = stream;
     if (videoRef.current) {
@@ -449,6 +457,15 @@ async function startCamera() {
               {isCameraOpen ? (
                 <div style={{ display: "flex", gap: 8 }}>
                   <button type="button" onClick={capturePhoto} style={{ fontSize: 11, padding: "4px 12px", background: "#44403c", color: "#fff", border: "none", borderRadius: 4, cursor: "pointer", fontFamily: "'DM Sans', sans-serif" }}>Potret</button>
+                  <button type="button" onClick={() => {
+                    const next = cameraFacing === 'user' ? 'environment' : 'user';
+                    setCameraFacing(next);
+                    startCamera(next);
+                  }} style={{ fontSize: 12, padding: "4px 8px", background: "#f5f4f2", color: "#44403c", border: "1px solid #d6d3d1", borderRadius: 4, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ width: 14, height: 14 }}>
+                      <path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  </button>
                   <button type="button" onClick={stopCamera} style={{ fontSize: 11, padding: "4px 12px", background: "#f5f4f2", color: "#44403c", border: "1px solid #d6d3d1", borderRadius: 4, cursor: "pointer", fontFamily: "'DM Sans', sans-serif" }}>Batal</button>
                 </div>
               ) : (

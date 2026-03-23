@@ -436,6 +436,15 @@ body, html {
   font-family: 'DM Sans', sans-serif;
 }
 
+.ftc-search-input {
+  font-size: 13px;
+}
+@media (max-width: 600px) {
+  .ftc-search-input {
+    font-size: 16px !important;
+  }
+}
+
 .family-tree {
   display: flex;
   justify-content: center;
@@ -912,6 +921,7 @@ export default function FamilyTreeClient() {
                </button>
                {isSearchExpanded && (
                  <input 
+                   className="ftc-search-input"
                    autoFocus
                    type="text"
                    placeholder="Cari nama..."
@@ -922,7 +932,7 @@ export default function FamilyTreeClient() {
                    }}
                    style={{
                      border: "none", background: "transparent", outline: "none",
-                     width: "100%", padding: "0 8px", fontFamily: "'DM Sans', sans-serif", fontSize: 13,
+                     width: "100%", padding: "0 8px", fontFamily: "'DM Sans', sans-serif",
                      color: "#44403c"
                    }}
                  />

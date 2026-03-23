@@ -276,7 +276,7 @@ async function startCamera(overrideFacing?: 'user'|'environment') {
 
   const inputClass = `
     w-full border-0 border-b border-stone-200 bg-transparent text-stone-800
-    text-sm py-2.5 px-0 placeholder-stone-300
+    text-base py-2.5 px-0 placeholder-stone-300
     focus:outline-none focus:border-stone-500
     transition-colors duration-200
     [color-scheme:light]
@@ -284,7 +284,7 @@ async function startCamera(overrideFacing?: 'user'|'environment') {
 
   const selectClass = `
     w-full border-0 border-b border-stone-200 bg-transparent text-stone-800
-    text-sm py-2.5 px-0
+    text-base py-2.5 px-0
     focus:outline-none focus:border-stone-500
     transition-colors duration-200
     [color-scheme:light]
@@ -338,7 +338,7 @@ async function startCamera(overrideFacing?: 'user'|'environment') {
           border: 1px solid #e7e5e4;
           background: #fafaf9;
           color: #44403c;
-          font-size: 12.5px;
+          font-size: 16px;
           font-family: 'DM Sans', sans-serif;
           padding: 8px;
           focus: outline-none;

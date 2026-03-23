@@ -3,6 +3,8 @@
 import React, { useState, useMemo, useEffect, useRef } from "react";
 import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 import { Person, Gender, Generation } from "../types/family";
+import { db } from "../../lib/firebase";
+import { doc, setDoc, onSnapshot } from "firebase/firestore";
 import { initialFamily } from "../data/familyData";
 import AddMemberModal from "./AddMemberModal";
 
@@ -131,7 +133,7 @@ function Avatar({ person, size, fontSize }: { person: Person; size: number; font
 }
 
 /* ── Person card ──────────────────────────────────────────────────── */
-function PersonCard({ person, onEdit, onQuickAdd }: { person: Person; onEdit?: (p: Person) => void; onQuickAdd?: (type: 'child'|'sibling'|'spouse', p: Person) => void }) {
+function PersonCard({ person, onEdit, onQuickAdd }: { person: Person; onEdit?: (p: Person) => void; onQuickAdd?: (type: 'child'|'sibling'|'sibling-before'|'spouse', p: Person) => void }) {
   const [isHovered, setIsHovered] = useState(false);
   const [activeZone, setActiveZone] = useState<string | null>(null);
 
@@ -227,7 +229,25 @@ function PersonCard({ person, onEdit, onQuickAdd }: { person: Person; onEdit?: (
       { /* Quick Add Buttons */ }
       {isHovered && (
         <>
-          {/* Top Right -> Sibling */}
+          {/* Top Left -> Sibling Before */}
+          <button
+            onClick={(e) => { e.stopPropagation(); onQuickAdd?.("sibling-before", person); }}
+            onMouseEnter={() => setActiveZone("sibling-before")}
+            onMouseLeave={() => setActiveZone(null)}
+            style={{
+              position: "absolute", top: -14, left: -14,
+              background: "#fff", border: `1.5px solid ${p.cardBorder}`, color: p.accent,
+              borderRadius: 20, padding: activeZone === "sibling-before" ? "6px 10px" : "6px 8px",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              boxShadow: "0 2px 6px rgba(0,0,0,0.1)", cursor: "pointer", zIndex: 10,
+              fontFamily: "'DM Sans', sans-serif", fontSize: dims.fontSm, fontWeight: 500,
+              transition: "all 0.15s", whiteSpace: "nowrap"
+            }}
+          >
+            {activeZone === "sibling-before" ? "Saudara +" : "+"}
+          </button>
+
+          {/* Top Right -> Sibling After */}
           <button
             onClick={(e) => { e.stopPropagation(); onQuickAdd?.("sibling", person); }}
             onMouseEnter={() => setActiveZone("sibling")}
@@ -506,7 +526,7 @@ function buildTree(people: Person[]): ComputedFamily[] {
   return rootFamilies;
 }
 
-function TreeNode({ node, onEdit, onQuickAdd }: { node: ComputedFamily; onEdit?: (p: Person) => void, onQuickAdd?: (type: 'child'|'sibling'|'spouse', p: Person) => void }) {
+function TreeNode({ node, onEdit, onQuickAdd }: { node: ComputedFamily; onEdit?: (p: Person) => void, onQuickAdd?: (type: 'child'|'sibling'|'sibling-before'|'spouse', p: Person) => void }) {
   const dims = GEN_DIMS[node.primary.generation];
   return (
     <li>
@@ -537,43 +557,6 @@ function TreeNode({ node, onEdit, onQuickAdd }: { node: ComputedFamily; onEdit?:
   );
 }
 
-/* ── Legend ───────────────────────────────────────────────────────── */
-function Legend() {
-  const items: [string, string][] = [
-    [genPalette[4].accent, "Generasi 0"],
-    [genPalette[3].accent, "Generasi 1"],
-    [genPalette[2].accent, "Generasi 2"],
-    [genPalette[1].accent, "Generasi 3"],
-    ["#34d399", "Hidup"],
-    ["#d6d3d1", "Meninggal"],
-  ];
-  return (
-    <div style={{
-      display: "flex",
-      flexWrap: "wrap",
-      gap: "8px 20px",
-      justifyContent: "center",
-      marginTop: 48,
-      paddingTop: 24,
-      borderTop: "1px solid #e7e5e4",
-    }}>
-      {items.map(([color, label], i) => (
-        <React.Fragment key={label}>
-          {i === 4 && (
-            <div style={{ width: 1, height: 14, background: "#e7e5e4", alignSelf: "center" }} />
-          )}
-          <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
-            <div style={{ width: 8, height: 8, borderRadius: "50%", background: color, flexShrink: 0 }} />
-            <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 11, color: "#a8a29e", letterSpacing: "0.03em" }}>
-              {label}
-            </span>
-          </div>
-        </React.Fragment>
-      ))}
-    </div>
-  );
-}
-
 /* ══ Main ═════════════════════════════════════════════════════════ */
 export default function FamilyTreeClient() {
   const [people, setPeople]       = useState<Person[]>(initialFamily);
@@ -581,7 +564,7 @@ export default function FamilyTreeClient() {
   const [preselect, setPreselect] = useState<Generation>(3);
   const [isLoaded, setIsLoaded]   = useState(false);
   const [editTarget, setEditTarget] = useState<Person | null>(null);
-  const [quickAddData, setQuickAddData] = useState<{ type: 'child'|'sibling'|'spouse', source: Person } | null>(null);
+  const [quickAddData, setQuickAddData] = useState<{ type: 'child'|'sibling'|'sibling-before'|'spouse', source: Person } | null>(null);
 
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearchExpanded, setIsSearchExpanded] = useState(false);
@@ -615,29 +598,70 @@ export default function FamilyTreeClient() {
      setIsSearchExpanded(false);
   }
 
+  // ── Firestore sync ────────────────────────────────────────────────
+  const TREE_DOC = doc(db, "familyTrees", "ikadam");
+
+  // Load: subscribe to real-time updates from Firestore
   useEffect(() => {
-    const saved = localStorage.getItem("familyTreeSettings");
-    if (saved) {
-      try {
-        setPeople(JSON.parse(saved));
-      } catch (e) {
-        console.error("Failed to parse local storage", e);
+    const unsub = onSnapshot(TREE_DOC, (snap) => {
+      if (snap.exists()) {
+        const data = snap.data();
+        if (Array.isArray(data.people)) {
+          setPeople(data.people as Person[]);
+        }
       }
-    }
-    setIsLoaded(true);
+      setIsLoaded(true);
+    }, (err) => {
+      console.error("Firestore read error:", err);
+      setIsLoaded(true);
+    });
+    return () => unsub();
   }, []);
 
+  // Save: write back to Firestore whenever `people` changes (debounced 800ms)
+  const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(() => {
-    if (isLoaded) {
-      localStorage.setItem("familyTreeSettings", JSON.stringify(people));
-    }
+    if (!isLoaded) return;
+    if (saveTimer.current) clearTimeout(saveTimer.current);
+    saveTimer.current = setTimeout(() => {
+      // Strip undefined fields — Firestore does not accept them
+      const sanitized = JSON.parse(JSON.stringify(people));
+      setDoc(TREE_DOC, { people: sanitized }, { merge: true }).catch((err) =>
+        console.error("Firestore write error:", err)
+      );
+    }, 800);
   }, [people, isLoaded]);
 
   function handleSave(person: Person) {
     if (editTarget) {
       setPeople((prev) => prev.map(p => p.id === person.id ? person : p));
     } else {
-      setPeople((prev) => [...prev, person]);
+      setPeople((prev) => {
+        const next = [...prev, person];
+        // If adding a sibling-before, immediately move the new sibling
+        // to one position before the source person
+        if (quickAddData?.type === 'sibling-before') {
+          const source = quickAddData.source;
+          const myParents = JSON.stringify([...(person.parents ?? [])].sort());
+          const siblings = next.filter(p =>
+            p.generation === person.generation &&
+            JSON.stringify([...(p.parents ?? [])].sort()) === myParents
+          );
+          const sourceIndex = siblings.findIndex(s => s.id === source.id);
+          const newPersonIndex = siblings.findIndex(s => s.id === person.id);
+          const targetIndex = Math.max(0, sourceIndex); // insert at source's current position (source shifts right)
+          if (newPersonIndex !== -1 && targetIndex !== newPersonIndex) {
+            const reordered = [...siblings];
+            reordered.splice(newPersonIndex, 1);
+            reordered.splice(targetIndex, 0, person);
+            const result = [...next];
+            const siblingIndices = siblings.map(s => result.findIndex(p => p.id === s.id)).sort((a,b) => a - b);
+            siblingIndices.forEach((mainIdx, i) => { result[mainIdx] = reordered[i]; });
+            return result;
+          }
+        }
+        return next;
+      });
     }
   }
 
@@ -721,7 +745,7 @@ export default function FamilyTreeClient() {
     setQuickAddData(null);
   }
 
-  function handleQuickAdd(type: 'child'|'sibling'|'spouse', source: Person) {
+  function handleQuickAdd(type: 'child'|'sibling'|'sibling-before'|'spouse', source: Person) {
     setQuickAddData({ type, source });
     setModalOpen(true);
     setEditTarget(null);
@@ -931,7 +955,6 @@ export default function FamilyTreeClient() {
             )}
           </TransformWrapper>
         </div>
-        <Legend />
       </div>
 
       {/* Modal */}

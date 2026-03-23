@@ -13,7 +13,7 @@ interface Props {
   preselect?: Generation;
   people:     Person[];
   editPerson?: Person | null;
-  quickAddData?: { type: 'child'|'sibling'|'spouse', source: Person } | null;
+  quickAddData?: { type: 'child'|'sibling'|'sibling-before'|'spouse', source: Person } | null;
 }
 
 const GEN_LABELS: Record<Generation, string> = {
@@ -188,12 +188,15 @@ async function startCamera() {
               ? [quickAddData.source.id, spousePool[0].id]
               : [quickAddData.source.id];
           baseForm.generation = Math.max(1, quickAddData.source.generation - 1) as Generation;
-        } else if (quickAddData.type === 'sibling') {
+        } else if (quickAddData.type === 'sibling' || quickAddData.type === 'sibling-before') {
           baseForm.parents = quickAddData.source.parents || [];
           baseForm.generation = quickAddData.source.generation;
         } else if (quickAddData.type === 'spouse') {
           baseForm.spouses = [quickAddData.source.id];
           baseForm.generation = quickAddData.source.generation;
+          // Auto-assign opposite gender to speed up data entry
+          if (quickAddData.source.gender === 'male') baseForm.gender = 'female';
+          else if (quickAddData.source.gender === 'female') baseForm.gender = 'male';
         }
         setForm(baseForm);
       } else {

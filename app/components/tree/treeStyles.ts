@@ -2,14 +2,14 @@ export const treeStyles = `
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600&family=DM+Sans:wght@300;400;500&display=swap');
 
 :root {
-  --ft-bg: #faf9f7;
-  --ft-nav-bg: rgba(250,249,247,0.92);
-  --ft-border: #e7e5e4;
-  --ft-text-primary: #44403c;
-  --ft-text-secondary: #78716c;
-  --ft-line: #d6d3d1;
+  --ft-bg: #fff;
+  --ft-nav-bg: rgba(255,255,255,0.95);
+  --ft-border: #d6d3d1;
+  --ft-text-primary: #000000;
+  --ft-text-secondary: #44403c;
+  --ft-line: #a8a29e;
   --ft-card-bg: #fff;
-  --ft-canvas-bg: #fdfdfb;
+  --ft-canvas-bg: #ffffff;
 }
 
 .dark-mode {
@@ -74,12 +74,12 @@ body, html {
 .family-tree li::before, .family-tree li::after {
   content: '';
   position: absolute; top: 0; right: 50%;
-  border-top: 1.5px solid var(--ft-line);
+  border-top: 2px solid var(--ft-line);
   width: 50%; height: 36px;
 }
 .family-tree li::after {
   right: auto; left: 50%;
-  border-left: 1.5px solid var(--ft-line);
+  border-left: 2px solid var(--ft-line);
 }
 .family-tree li:only-child::after,
 .family-tree li:only-child::before { display: none; }
@@ -87,7 +87,7 @@ body, html {
 .family-tree li:first-child::before,
 .family-tree li:last-child::after { border: 0 none; }
 .family-tree li:last-child::before {
-  border-right: 1.5px solid var(--ft-line);
+  border-right: 2px solid var(--ft-line);
   border-radius: 0 10px 0 0;
 }
 .family-tree li:first-child::after {
@@ -96,7 +96,7 @@ body, html {
 .family-tree ul ul::before {
   content: '';
   position: absolute; top: 0; left: 50%;
-  border-left: 1.5px solid var(--ft-line);
+  border-left: 2px solid var(--ft-line);
   width: 0; height: 36px;
   margin-left: -1px;
 }

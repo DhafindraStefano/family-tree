@@ -4,6 +4,7 @@ import React, { useEffect } from "react";
 import { Person, Generation } from "../../types/family";
 import { GenderIcon } from "../tree/GenderIcon";
 import { formatDate, genPalette, GEN_HEADING } from "../tree/constants";
+import { useAuth } from "../../../lib/AuthContext";
 
 interface Props {
   person: Person | null;
@@ -51,6 +52,7 @@ function Row({ label, children }: { label: string; children: React.ReactNode }) 
 }
 
 export function PersonViewModal({ person, people, onClose }: Props) {
+  const { theme } = useAuth();
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
     window.addEventListener("keydown", onKey);
@@ -111,7 +113,7 @@ export function PersonViewModal({ person, people, onClose }: Props) {
             width: "100%",
             maxWidth: 400,
             maxHeight: "90vh",
-            background: "var(--ft-card-bg)",
+            background: theme === 'light' ? p.cardBg : p.cardBgDark,
             borderRadius: 12,
             overflow: "hidden",
             display: "flex",
@@ -135,7 +137,8 @@ export function PersonViewModal({ person, people, onClose }: Props) {
             {/* Avatar */}
             <div style={{
               width: 64, height: 64, borderRadius: "50%", flexShrink: 0,
-              background: p.avatarBg, color: p.avatarText,
+              background: theme === 'light' ? p.avatarBg : p.badgeBgDark,
+              color: theme === 'light' ? p.avatarText : p.badgeTextDark,
               display: "flex", alignItems: "center", justifyContent: "center",
               fontFamily: "'Playfair Display', serif", fontSize: 22, fontWeight: 500,
               border: `2px solid ${p.cardBorder}`,
@@ -171,7 +174,8 @@ export function PersonViewModal({ person, people, onClose }: Props) {
                 fontFamily: "'DM Sans', sans-serif",
                 fontSize: 10, fontWeight: 500,
                 letterSpacing: "0.08em", textTransform: "uppercase",
-                background: p.badgeBg, color: p.badgeText,
+                background: theme === 'light' ? p.badgeBg : p.badgeBgDark,
+                color: theme === 'light' ? p.badgeText : p.badgeTextDark,
                 padding: "3px 10px", borderRadius: 20,
                 border: `1px solid ${p.cardBorder}`,
               }}>

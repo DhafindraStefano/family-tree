@@ -16,7 +16,7 @@ import { PersonViewModal } from "../modal/PersonViewModal";
 
 /* ══ Main ═════════════════════════════════════════════════════════ */
 export default function FamilyTreeClient() {
-  const { user, isAdmin, login, logout } = useAuth();
+  const { user, isAdmin, login, logout, theme, toggleTheme } = useAuth();
 
   const [people, setPeople]       = useState<Person[]>(initialFamily);
   const [modalOpen, setModalOpen] = useState(false);
@@ -28,24 +28,7 @@ export default function FamilyTreeClient() {
 
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearchExpanded, setIsSearchExpanded] = useState(false);
-  const [theme, setTheme] = useState<'light'|'dark'>('light');
   const transformRef = useRef<any>(null);
-
-  // Initialize theme from localStorage
-  useEffect(() => {
-    const savedTheme = localStorage.getItem('family-tree-theme') as 'light' | 'dark' | null;
-    if (savedTheme) {
-      setTheme(savedTheme);
-    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-      setTheme('dark');
-    }
-  }, []);
-
-  useEffect(() => {
-    localStorage.setItem('family-tree-theme', theme);
-  }, [theme]);
-
-  const toggleTheme = () => setTheme(prev => prev === 'light' ? 'dark' : 'light');
 
   const searchResults = useMemo(() => {
      if (!searchQuery.trim()) return [];

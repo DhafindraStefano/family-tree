@@ -3,7 +3,7 @@ import { Person } from "../../types/family";
 import { genPalette, GEN_DIMS, formatDate } from "./constants";
 import { Avatar } from "./Avatar";
 import { GenderIcon } from "./GenderIcon";
-
+import { useAuth } from "../../../lib/AuthContext";
 export function PersonCard({ person, onEdit, onQuickAdd, onView, isAdmin }: { 
   person: Person; 
   onEdit?: (p: Person) => void; 
@@ -11,6 +11,7 @@ export function PersonCard({ person, onEdit, onQuickAdd, onView, isAdmin }: {
   onView?: (p: Person) => void;
   isAdmin?: boolean;
 }) {
+  const { theme } = useAuth();
   const [isHovered, setIsHovered] = useState(false);
   const [activeZone, setActiveZone] = useState<string | null>(null);
   const [isHeld, setIsHeld] = useState(false);
@@ -96,7 +97,7 @@ export function PersonCard({ person, onEdit, onQuickAdd, onView, isAdmin }: {
         }}
         style={{
           display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center",
-          padding: "16px", background: "var(--ft-card-bg)",
+          padding: "16px", background: theme === 'light' ? p.cardBg : p.cardBgDark,
           border: `1px solid ${p.cardBorder}`, borderTop: `3px solid ${p.accent}`,
           width: "100%", flexShrink: 0, cursor: "pointer",
           transition: "box-shadow 0.2s, transform 0.2s, background 0.3s ease",
@@ -167,7 +168,7 @@ export function PersonCard({ person, onEdit, onQuickAdd, onView, isAdmin }: {
       </div>
 
       { /* Quick Add Buttons */ }
-      {isAdmin &&showButtons && (
+      {isAdmin && showButtons && (
         <>
           {/* Top Left -> Sibling Before */}
           <button
@@ -176,7 +177,7 @@ export function PersonCard({ person, onEdit, onQuickAdd, onView, isAdmin }: {
             onMouseLeave={() => setActiveZone(null)}
             style={{
               position: "absolute", top: -14, left: -14,
-              background: "var(--ft-card-bg)", border: `1.5px solid ${p.cardBorder}`, color: p.accent,
+              background: theme === 'light' ? p.cardBg : p.cardBgDark, border: `1.5px solid ${p.cardBorder}`, color: p.accent,
               borderRadius: 20, padding: activeZone === "sibling-before" ? "6px 10px" : "6px 8px",
               display: "flex", alignItems: "center", justifyContent: "center",
               boxShadow: "0 2px 6px rgba(0,0,0,0.1)", cursor: isAdmin ? "pointer" : "default", zIndex: 10,
@@ -194,7 +195,7 @@ export function PersonCard({ person, onEdit, onQuickAdd, onView, isAdmin }: {
             onMouseLeave={() => setActiveZone(null)}
             style={{
               position: "absolute", top: -14, right: -14,
-              background: "var(--ft-card-bg)", border: `1.5px solid ${p.cardBorder}`, color: p.accent,
+              background: theme === 'light' ? p.cardBg : p.cardBgDark, border: `1.5px solid ${p.cardBorder}`, color: p.accent,
               borderRadius: 20, padding: activeZone === "sibling" ? "6px 10px" : "6px 8px",
               display: "flex", alignItems: "center", justifyContent: "center",
               boxShadow: "0 2px 6px rgba(0,0,0,0.1)", cursor: isAdmin ? "pointer" : "default", zIndex: 10,
@@ -212,7 +213,7 @@ export function PersonCard({ person, onEdit, onQuickAdd, onView, isAdmin }: {
             onMouseLeave={() => setActiveZone(null)}
             style={{
               position: "absolute", bottom: 20, right: -14,
-              background: "var(--ft-card-bg)", border: `1.5px solid ${p.cardBorder}`, color: p.accent,
+              background: theme === 'light' ? p.cardBg : p.cardBgDark, border: `1.5px solid ${p.cardBorder}`, color: p.accent,
               borderRadius: 20, padding: activeZone === "spouse" ? "6px 10px" : "6px 8px",
               display: "flex", alignItems: "center", justifyContent: "center",
               boxShadow: "0 2px 6px rgba(0,0,0,0.1)", cursor: isAdmin ? "pointer" : "default", zIndex: 10,
@@ -230,7 +231,7 @@ export function PersonCard({ person, onEdit, onQuickAdd, onView, isAdmin }: {
             onMouseLeave={() => setActiveZone(null)}
             style={{
               position: "absolute", bottom: -14, left: "50%", transform: "translateX(-50%)",
-              background: "var(--ft-card-bg)", border: `1.5px solid ${p.cardBorder}`, color: p.accent,
+              background: theme === 'light' ? p.cardBg : p.cardBgDark, border: `1.5px solid ${p.cardBorder}`, color: p.accent,
               borderRadius: 20, padding: activeZone === "child" ? "6px 10px" : "6px 8px",
               display: "flex", alignItems: "center", justifyContent: "center",
               boxShadow: "0 2px 6px rgba(0,0,0,0.1)", cursor: isAdmin ? "pointer" : "default", zIndex: 10,

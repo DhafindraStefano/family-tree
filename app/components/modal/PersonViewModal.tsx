@@ -169,18 +169,6 @@ export function PersonViewModal({ person, people, onClose }: Props) {
                   "{person.alias}"
                 </p>
               )}
-              <span style={{
-                display: "inline-block", marginTop: 8,
-                fontFamily: "'DM Sans', sans-serif",
-                fontSize: 10, fontWeight: 500,
-                letterSpacing: "0.08em", textTransform: "uppercase",
-                background: theme === 'light' ? p.badgeBg : p.badgeBgDark,
-                color: theme === 'light' ? p.badgeText : p.badgeTextDark,
-                padding: "3px 10px", borderRadius: 20,
-                border: `1px solid ${p.cardBorder}`,
-              }}>
-                {GEN_HEADING[person.generation as Generation]}
-              </span>
             </div>
 
             {/* Close */}

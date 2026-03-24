@@ -178,14 +178,14 @@ export function PersonCard({ person, onEdit, onQuickAdd, onView, isAdmin }: {
             style={{
               position: "absolute", top: -14, left: -14,
               background: theme === 'light' ? p.cardBg : p.cardBgDark, border: `1.5px solid ${p.cardBorder}`, color: p.accent,
-              borderRadius: 20, padding: activeZone === "sibling-before" ? "6px 10px" : "6px 8px",
+              borderRadius: 20, padding: (isHeld || activeZone === "sibling-before") ? "6px 12px" : "6px 8px",
               display: "flex", alignItems: "center", justifyContent: "center",
               boxShadow: "0 2px 6px rgba(0,0,0,0.1)", cursor: isAdmin ? "pointer" : "default", zIndex: 10,
               fontFamily: "'DM Sans', sans-serif", fontSize: dims.fontSm, fontWeight: 500,
-              transition: "all 0.15s, background 0.3s ease", whiteSpace: "nowrap"
+              transition: "all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), background 0.3s ease", whiteSpace: "nowrap"
             }}
           >
-            {activeZone === "sibling-before" ? "Saudara +" : "+"}
+            {(isHeld || activeZone === "sibling-before") ? "Saudara +" : "+"}
           </button>
 
           {/* Top Right -> Sibling After */}
@@ -196,14 +196,14 @@ export function PersonCard({ person, onEdit, onQuickAdd, onView, isAdmin }: {
             style={{
               position: "absolute", top: -14, right: -14,
               background: theme === 'light' ? p.cardBg : p.cardBgDark, border: `1.5px solid ${p.cardBorder}`, color: p.accent,
-              borderRadius: 20, padding: activeZone === "sibling" ? "6px 10px" : "6px 8px",
+              borderRadius: 20, padding: (isHeld || activeZone === "sibling") ? "6px 12px" : "6px 8px",
               display: "flex", alignItems: "center", justifyContent: "center",
               boxShadow: "0 2px 6px rgba(0,0,0,0.1)", cursor: isAdmin ? "pointer" : "default", zIndex: 10,
               fontFamily: "'DM Sans', sans-serif", fontSize: dims.fontSm, fontWeight: 500,
-              transition: "all 0.15s, background 0.3s ease", whiteSpace: "nowrap"
+              transition: "all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), background 0.3s ease", whiteSpace: "nowrap"
             }}
           >
-            {activeZone === "sibling" ? "+ Saudara" : "+"}
+            {(isHeld || activeZone === "sibling") ? "+ Saudara" : "+"}
           </button>
           
           {/* Bottom Right -> Spouse */}
@@ -214,14 +214,14 @@ export function PersonCard({ person, onEdit, onQuickAdd, onView, isAdmin }: {
             style={{
               position: "absolute", bottom: 20, right: -14,
               background: theme === 'light' ? p.cardBg : p.cardBgDark, border: `1.5px solid ${p.cardBorder}`, color: p.accent,
-              borderRadius: 20, padding: activeZone === "spouse" ? "6px 10px" : "6px 8px",
+              borderRadius: 20, padding: (isHeld || activeZone === "spouse") ? "6px 12px" : "6px 8px",
               display: "flex", alignItems: "center", justifyContent: "center",
               boxShadow: "0 2px 6px rgba(0,0,0,0.1)", cursor: isAdmin ? "pointer" : "default", zIndex: 10,
               fontFamily: "'DM Sans', sans-serif", fontSize: dims.fontSm, fontWeight: 500,
-              transition: "all 0.15s, background 0.3s ease", whiteSpace: "nowrap"
+              transition: "all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), background 0.3s ease", whiteSpace: "nowrap"
             }}
           >
-            {activeZone === "spouse" ? "+ Pasangan" : "+"}
+            {(isHeld || activeZone === "spouse") ? "+ Pasangan" : "+"}
           </button>
 
           {/* Bottom Middle -> Descendant */}
@@ -232,14 +232,14 @@ export function PersonCard({ person, onEdit, onQuickAdd, onView, isAdmin }: {
             style={{
               position: "absolute", bottom: -14, left: "50%", transform: "translateX(-50%)",
               background: theme === 'light' ? p.cardBg : p.cardBgDark, border: `1.5px solid ${p.cardBorder}`, color: p.accent,
-              borderRadius: 20, padding: activeZone === "child" ? "6px 10px" : "6px 8px",
+              borderRadius: 20, padding: (isHeld || activeZone === "child") ? "6px 12px" : "6px 8px",
               display: "flex", alignItems: "center", justifyContent: "center",
               boxShadow: "0 2px 6px rgba(0,0,0,0.1)", cursor: isAdmin ? "pointer" : "default", zIndex: 10,
               fontFamily: "'DM Sans', sans-serif", fontSize: dims.fontSm, fontWeight: 500,
-              transition: "all 0.15s, background 0.3s ease", whiteSpace: "nowrap"
+              transition: "all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), background 0.3s ease", whiteSpace: "nowrap"
             }}
           >
-            {activeZone === "child" ? "+ Keturunan" : "+"}
+            {(isHeld || activeZone === "child") ? "+ Keturunan" : "+"}
           </button>
         </>
       )}

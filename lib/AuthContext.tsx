@@ -32,7 +32,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }): React
   useEffect(() => {
     const saved = localStorage.getItem('family-tree-theme') as 'light' | 'dark' | null;
     if (saved) setTheme(saved);
-    else if (window.matchMedia('(prefers-color-scheme: dark)').matches) setTheme('dark');
+    // Removed system preference check to default to light mode
   }, []);
 
   useEffect(() => {

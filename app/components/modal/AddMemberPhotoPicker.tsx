@@ -128,9 +128,9 @@ export function AddMemberPhotoPicker({ imageUrl, onImageChange, isOpen }: Props)
       {!isCameraOpen && (
         <div style={{
           width: 80, height: 80, borderRadius: "50%",
-          background: "#f5f4f2", border: "1px dashed #d6d3d1",
+          background: "var(--ft-canvas-bg)", border: "1px dashed var(--ft-border)",
           display: "flex", alignItems: "center", justifyContent: "center",
-          overflow: "hidden", color: "#a8a29e"
+          overflow: "hidden", color: "var(--ft-text-secondary)"
         }}>
           {imageUrl ? (
             <img src={imageUrl} style={{ width: "100%", height: "100%", objectFit: "cover" }} alt="Avatar Preview" />
@@ -144,25 +144,25 @@ export function AddMemberPhotoPicker({ imageUrl, onImageChange, isOpen }: Props)
 
       {isCameraOpen ? (
         <div style={{ display: "flex", gap: 8 }}>
-          <button type="button" onClick={capturePhoto} style={{ fontSize: 11, padding: "4px 12px", background: "#44403c", color: "#fff", border: "none", borderRadius: 4, cursor: "pointer", fontFamily: "'DM Sans', sans-serif" }}>Potret</button>
+          <button type="button" onClick={capturePhoto} style={{ fontSize: 11, padding: "4px 12px", background: "var(--ft-text-primary)", color: "var(--ft-card-bg)", border: "none", borderRadius: 4, cursor: "pointer", fontFamily: "'DM Sans', sans-serif" }}>Potret</button>
           <button type="button" onClick={() => {
             const next = cameraFacing === 'user' ? 'environment' : 'user';
             setCameraFacing(next);
             startCamera(next);
-          }} style={{ fontSize: 12, padding: "4px 8px", background: "#f5f4f2", color: "#44403c", border: "1px solid #d6d3d1", borderRadius: 4, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
+          }} style={{ fontSize: 12, padding: "4px 8px", background: "var(--ft-canvas-bg)", color: "var(--ft-text-primary)", border: "1px solid var(--ft-border)", borderRadius: 4, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ width: 14, height: 14 }}>
               <path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </button>
-          <button type="button" onClick={stopCamera} style={{ fontSize: 11, padding: "4px 12px", background: "#f5f4f2", color: "#44403c", border: "1px solid #d6d3d1", borderRadius: 4, cursor: "pointer", fontFamily: "'DM Sans', sans-serif" }}>Batal</button>
+          <button type="button" onClick={stopCamera} style={{ fontSize: 11, padding: "4px 12px", background: "var(--ft-canvas-bg)", color: "var(--ft-text-primary)", border: "1px solid var(--ft-border)", borderRadius: 4, cursor: "pointer", fontFamily: "'DM Sans', sans-serif" }}>Batal</button>
         </div>
       ) : (
         <div style={{ display: "flex", gap: 12, justifyContent: "center" }}>
-          <label style={{ fontSize: 11, color: "#78716c", fontFamily: "'DM Sans', sans-serif", cursor: "pointer" }}>
+          <label style={{ fontSize: 11, color: "var(--ft-text-secondary)", fontFamily: "'DM Sans', sans-serif", cursor: "pointer" }}>
             <input type="file" accept="image/*" onChange={handleFileChange} style={{ display: "none" }} />
             Unggah File
           </label>
-          <span onClick={(e) => { e.preventDefault(); startCamera(); }} style={{ fontSize: 11, color: "#78716c", fontFamily: "'DM Sans', sans-serif", cursor: "pointer" }}>
+          <span onClick={(e) => { e.preventDefault(); startCamera(); }} style={{ fontSize: 11, color: "var(--ft-text-secondary)", fontFamily: "'DM Sans', sans-serif", cursor: "pointer" }}>
             Ambil Foto
           </span>
           {imageUrl && (

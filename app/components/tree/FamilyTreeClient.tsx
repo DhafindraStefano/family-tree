@@ -28,7 +28,24 @@ export default function FamilyTreeClient() {
 
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearchExpanded, setIsSearchExpanded] = useState(false);
+  const [theme, setTheme] = useState<'light'|'dark'>('light');
   const transformRef = useRef<any>(null);
+
+  // Initialize theme from localStorage
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('family-tree-theme') as 'light' | 'dark' | null;
+    if (savedTheme) {
+      setTheme(savedTheme);
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+      setTheme('dark');
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem('family-tree-theme', theme);
+  }, [theme]);
+
+  const toggleTheme = () => setTheme(prev => prev === 'light' ? 'dark' : 'light');
 
   const searchResults = useMemo(() => {
      if (!searchQuery.trim()) return [];
@@ -246,34 +263,76 @@ export default function FamilyTreeClient() {
   if (!isLoaded) return null; // Avoid hydration mismatch
 
   return (
-    <div className="ftc-page">
+    <div className={`ftc-page ${theme === 'dark' ? 'dark-mode' : ''}`}>
       <style dangerouslySetInnerHTML={{ __html: treeStyles }} />
 
       {/* Top nav bar */}
       <div style={{
         position: "fixed", top: 0, left: 0, right: 0, zIndex: 40,
-        background: "rgba(250,249,247,0.92)",
+        background: "var(--ft-nav-bg)",
         backdropFilter: "blur(8px)",
-        borderBottom: "1px solid #e7e5e4",
+        borderBottom: "1px solid var(--ft-border)",
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
         padding: "0 16px",
         height: 56,
+        transition: "background 0.3s ease, border-bottom 0.3s ease",
       }}>
-        <span style={{
-          fontFamily: "'Playfair Display', serif",
-          fontSize: 15,
-          fontWeight: 500,
-          color: "#44403c",
-          letterSpacing: "-0.01em",
-          whiteSpace: "nowrap",
-          overflow: "hidden",
-          textOverflow: "ellipsis",
-          maxWidth: 140,
-        }}>
-          Keluarga Ikadam
-        </span>
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <span style={{
+            fontFamily: "'Playfair Display', serif",
+            fontSize: 15,
+            fontWeight: 500,
+            color: "var(--ft-text-primary)",
+            letterSpacing: "-0.01em",
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            maxWidth: 140,
+          }}>
+            Keluarga Ikadam
+          </span>
+
+          <button
+            onClick={toggleTheme}
+            title={theme === 'light' ? "Mode Gelap" : "Mode Terang"}
+            style={{
+              background: "none",
+              border: "1px solid var(--ft-border)",
+              borderRadius: "50%",
+              width: 32,
+              height: 32,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              cursor: "pointer",
+              color: "var(--ft-text-primary)",
+              transition: "all 0.2s",
+              padding: 0,
+            }}
+            onMouseEnter={e => e.currentTarget.style.background = "var(--ft-border)"}
+            onMouseLeave={e => e.currentTarget.style.background = "none"}
+          >
+            {theme === 'light' ? (
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ width: 16, height: 16 }}>
+                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+              </svg>
+            ) : (
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ width: 16, height: 16 }}>
+                <circle cx="12" cy="12" r="5" />
+                <line x1="12" y1="1" x2="12" y2="3" />
+                <line x1="12" y1="21" x2="12" y2="23" />
+                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+                <line x1="1" y1="12" x2="3" y2="12" />
+                <line x1="21" y1="12" x2="23" y2="12" />
+                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+              </svg>
+            )}
+          </button>
+        </div>
 
         <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
           {/* Search container */}
@@ -453,7 +512,7 @@ export default function FamilyTreeClient() {
       >
 
         {/* Tree Canvas */}
-        <div style={{ flex: 1, position: "relative", background: "#fdfdfb", overflow: "hidden" }}>
+        <div style={{ flex: 1, position: "relative", background: "var(--ft-canvas-bg)", overflow: "hidden", transition: "background 0.3s ease" }}>
           <TransformWrapper
             ref={transformRef}
             initialScale={1}

@@ -96,11 +96,11 @@ export function PersonCard({ person, onEdit, onQuickAdd, onView, isAdmin }: {
         }}
         style={{
           display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center",
-          padding: "16px", background: "#fff",
+          padding: "16px", background: "var(--ft-card-bg)",
           border: `1px solid ${p.cardBorder}`, borderTop: `3px solid ${p.accent}`,
           width: "100%", flexShrink: 0, cursor: "pointer",
-          transition: "box-shadow 0.2s, transform 0.2s",
-          boxShadow: isHovered ? "0 6px 20px rgba(0,0,0,0.10)" : "0 1px 4px rgba(0,0,0,0.05)",
+          transition: "box-shadow 0.2s, transform 0.2s, background 0.3s ease",
+          boxShadow: isHovered ? "0 6px 20px rgba(0,0,0,0.15)" : "0 1px 4px rgba(0,0,0,0.05)",
           transform: isHovered ? "translateY(-2px)" : "translateY(0)"
         }}
       >
@@ -110,7 +110,7 @@ export function PersonCard({ person, onEdit, onQuickAdd, onView, isAdmin }: {
           fontFamily: "'Playfair Display', serif",
           fontSize: dims.fontLg,
           fontWeight: 500,
-          color: "#1c1917",
+          color: "var(--ft-text-primary)",
           lineHeight: 1.3,
           margin: 0,
           marginBottom: person.alias ? 4 : 16,
@@ -123,7 +123,7 @@ export function PersonCard({ person, onEdit, onQuickAdd, onView, isAdmin }: {
             fontFamily: "'DM Sans', sans-serif",
             fontSize: dims.fontMd,
             fontStyle: "italic",
-            color: "#78716c",
+            color: "var(--ft-text-secondary)",
             margin: 0,
             marginBottom: 16,
           }}>
@@ -131,7 +131,7 @@ export function PersonCard({ person, onEdit, onQuickAdd, onView, isAdmin }: {
           </p>
         )}
 
-        <div style={{ width: "100%", height: 1, background: "#f5f4f2", marginBottom: 10 }} />
+        <div style={{ width: "100%", height: 1, background: "var(--ft-border)", marginBottom: 10 }} />
 
         <div style={{ width: "100%", display: "flex", flexDirection: "column", gap: 5 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 6, color: "#a8a29e" }}>
@@ -176,12 +176,12 @@ export function PersonCard({ person, onEdit, onQuickAdd, onView, isAdmin }: {
             onMouseLeave={() => setActiveZone(null)}
             style={{
               position: "absolute", top: -14, left: -14,
-              background: "#fff", border: `1.5px solid ${p.cardBorder}`, color: p.accent,
+              background: "var(--ft-card-bg)", border: `1.5px solid ${p.cardBorder}`, color: p.accent,
               borderRadius: 20, padding: activeZone === "sibling-before" ? "6px 10px" : "6px 8px",
               display: "flex", alignItems: "center", justifyContent: "center",
               boxShadow: "0 2px 6px rgba(0,0,0,0.1)", cursor: isAdmin ? "pointer" : "default", zIndex: 10,
               fontFamily: "'DM Sans', sans-serif", fontSize: dims.fontSm, fontWeight: 500,
-              transition: "all 0.15s", whiteSpace: "nowrap"
+              transition: "all 0.15s, background 0.3s ease", whiteSpace: "nowrap"
             }}
           >
             {activeZone === "sibling-before" ? "Saudara +" : "+"}
@@ -194,12 +194,12 @@ export function PersonCard({ person, onEdit, onQuickAdd, onView, isAdmin }: {
             onMouseLeave={() => setActiveZone(null)}
             style={{
               position: "absolute", top: -14, right: -14,
-              background: "#fff", border: `1.5px solid ${p.cardBorder}`, color: p.accent,
+              background: "var(--ft-card-bg)", border: `1.5px solid ${p.cardBorder}`, color: p.accent,
               borderRadius: 20, padding: activeZone === "sibling" ? "6px 10px" : "6px 8px",
               display: "flex", alignItems: "center", justifyContent: "center",
               boxShadow: "0 2px 6px rgba(0,0,0,0.1)", cursor: isAdmin ? "pointer" : "default", zIndex: 10,
               fontFamily: "'DM Sans', sans-serif", fontSize: dims.fontSm, fontWeight: 500,
-              transition: "all 0.15s", whiteSpace: "nowrap"
+              transition: "all 0.15s, background 0.3s ease", whiteSpace: "nowrap"
             }}
           >
             {activeZone === "sibling" ? "+ Saudara" : "+"}
@@ -212,12 +212,12 @@ export function PersonCard({ person, onEdit, onQuickAdd, onView, isAdmin }: {
             onMouseLeave={() => setActiveZone(null)}
             style={{
               position: "absolute", bottom: 20, right: -14,
-              background: "#fff", border: `1.5px solid ${p.cardBorder}`, color: p.accent,
+              background: "var(--ft-card-bg)", border: `1.5px solid ${p.cardBorder}`, color: p.accent,
               borderRadius: 20, padding: activeZone === "spouse" ? "6px 10px" : "6px 8px",
               display: "flex", alignItems: "center", justifyContent: "center",
               boxShadow: "0 2px 6px rgba(0,0,0,0.1)", cursor: isAdmin ? "pointer" : "default", zIndex: 10,
               fontFamily: "'DM Sans', sans-serif", fontSize: dims.fontSm, fontWeight: 500,
-              transition: "all 0.15s", whiteSpace: "nowrap"
+              transition: "all 0.15s, background 0.3s ease", whiteSpace: "nowrap"
             }}
           >
             {activeZone === "spouse" ? "+ Pasangan" : "+"}
@@ -230,12 +230,12 @@ export function PersonCard({ person, onEdit, onQuickAdd, onView, isAdmin }: {
             onMouseLeave={() => setActiveZone(null)}
             style={{
               position: "absolute", bottom: -14, left: "50%", transform: "translateX(-50%)",
-              background: "#fff", border: `1.5px solid ${p.cardBorder}`, color: p.accent,
+              background: "var(--ft-card-bg)", border: `1.5px solid ${p.cardBorder}`, color: p.accent,
               borderRadius: 20, padding: activeZone === "child" ? "6px 10px" : "6px 8px",
               display: "flex", alignItems: "center", justifyContent: "center",
               boxShadow: "0 2px 6px rgba(0,0,0,0.1)", cursor: isAdmin ? "pointer" : "default", zIndex: 10,
               fontFamily: "'DM Sans', sans-serif", fontSize: dims.fontSm, fontWeight: 500,
-              transition: "all 0.15s", whiteSpace: "nowrap"
+              transition: "all 0.15s, background 0.3s ease", whiteSpace: "nowrap"
             }}
           >
             {activeZone === "child" ? "+ Keturunan" : "+"}

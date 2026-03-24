@@ -112,19 +112,17 @@ export default function AddMemberModal({ isOpen, onClose, onSave, onDelete, onMo
 
 
   const inputClass = `
-    w-full border-0 border-b border-stone-200 bg-transparent text-stone-800
-    text-base py-2.5 px-0 placeholder-stone-300
-    focus:outline-none focus:border-stone-500
+    w-full border-0 border-b border-[var(--ft-border)] bg-transparent text-[var(--ft-text-primary)]
+    text-base py-2.5 px-0 placeholder-[var(--ft-text-secondary)]
+    focus:outline-none focus:border-[var(--ft-text-primary)]
     transition-colors duration-200
-    [color-scheme:light]
   `;
 
   const selectClass = `
-    w-full border-0 border-b border-stone-200 bg-transparent text-stone-800
+    w-full border-0 border-b border-[var(--ft-border)] bg-transparent text-[var(--ft-text-primary)]
     text-base py-2.5 px-0
-    focus:outline-none focus:border-stone-500
+    focus:outline-none focus:border-[var(--ft-text-primary)]
     transition-colors duration-200
-    [color-scheme:light]
   `;
 
   return (
@@ -154,27 +152,27 @@ export default function AddMemberModal({ isOpen, onClose, onSave, onDelete, onMo
           font-family: 'DM Sans', sans-serif;
           font-weight: 400;
           letter-spacing: 0.02em;
-          border: 1px solid #e7e5e4;
+          border: 1px solid var(--ft-border);
           background: transparent;
-          color: #a8a29e;
+          color: var(--ft-text-secondary);
           cursor: pointer;
           transition: all 0.15s ease;
         }
         .amm-toggle-btn:hover:not(.active) {
-          background: #fafaf9;
-          color: #78716c;
+          background: var(--ft-border);
+          color: var(--ft-text-primary);
         }
-        .amm-toggle-btn.active-male   { border-color: #60a5fa; background: #eff6ff; color: #2563eb; }
-        .amm-toggle-btn.active-female { border-color: #f9a8d4; background: #fdf2f8; color: #be185d; }
-        .amm-toggle-btn.active-alive  { border-color: #86efac; background: #f0fdf4; color: #15803d; }
-        .amm-toggle-btn.active-deceased { border-color: #d6d3d1; background: #fafaf9; color: #57534e; }
+        .amm-toggle-btn.active-male   { border-color: #60a5fa; background: rgba(96, 165, 250, 0.1); color: #3b82f6; }
+        .amm-toggle-btn.active-female { border-color: #f9a8d4; background: rgba(249, 168, 212, 0.1); color: #ec4899; }
+        .amm-toggle-btn.active-alive  { border-color: #86efac; background: rgba(134, 239, 172, 0.1); color: #10b981; }
+        .amm-toggle-btn.active-deceased { border-color: var(--ft-border); background: var(--ft-border); color: var(--ft-text-secondary); }
 
         .amm-multi-select {
           width: 100%;
           height: 100px;
-          border: 1px solid #e7e5e4;
-          background: #fafaf9;
-          color: #44403c;
+          border: 1px solid var(--ft-border);
+          background: var(--ft-canvas-bg);
+          color: var(--ft-text-primary);
           font-size: 16px;
           font-family: 'DM Sans', sans-serif;
           padding: 8px;
@@ -196,7 +194,7 @@ export default function AddMemberModal({ isOpen, onClose, onSave, onDelete, onMo
           font-weight: 500;
           letter-spacing: 0.1em;
           text-transform: uppercase;
-          color: #a8a29e;
+          color: var(--ft-text-secondary);
           margin-bottom: 10px;
         }
 
@@ -212,50 +210,51 @@ export default function AddMemberModal({ isOpen, onClose, onSave, onDelete, onMo
 
       <div
         className="amm-overlay fixed inset-0 z-50 flex items-center justify-center p-4"
-        style={{ background: "rgba(245,244,242,0.85)", backdropFilter: "blur(8px)" }}
+        style={{ background: "rgba(0,0,0,0.4)", backdropFilter: "blur(8px)" }}
         onClick={(e) => e.target === e.currentTarget && onClose()}
       >
         <div
-          className="amm-panel relative w-full max-w-sm bg-white"
+          className="amm-panel relative w-full max-w-sm bg-[var(--ft-card-bg)]"
           style={{
-            boxShadow: "0 2px 4px rgba(0,0,0,0.04), 0 12px 40px rgba(0,0,0,0.10)",
+            boxShadow: "0 2px 4px rgba(0,0,0,0.1), 0 12px 40px rgba(0,0,0,0.2)",
             maxHeight: "90vh",
             display: "flex",
             flexDirection: "column",
             borderRadius: 8,
-            overflow: "hidden"
+            overflow: "hidden",
+            transition: "background 0.3s ease"
           }}
         >
           {/* Top rule */}
-          <div style={{ height: 3, background: "#44403c", flexShrink: 0 }} />
+          <div style={{ height: 3, background: "var(--ft-text-primary)", flexShrink: 0 }} />
 
           {/* Header */}
           <div className="flex items-start justify-between px-10 pt-6 pb-6" style={{ flexShrink: 0 }}>
             <div>
-              <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: 20, fontWeight: 500, marginTop: 10, marginLeft: 32, color: "#1c1917", letterSpacing: "-0.01em"}}>
+              <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: 20, fontWeight: 500, marginTop: 10, marginLeft: 32, color: "var(--ft-text-primary)", letterSpacing: "-0.01em"}}>
                 {editPerson ? "Edit Anggota Keluarga" : "Tambah Anggota Keluarga"}
               </h2>
             </div>
-            <button
-              onClick={onClose}
-              aria-label="Close modal"
-              style={{
-                marginTop: 2,
-                width: 28, height: 28,
-                display: "flex", alignItems: "center", justifyContent: "center",
-                background: "none", border: "none", cursor: "pointer",
-                color: "#c4bfbb", fontSize: 16, lineHeight: 1,
-                transition: "color 0.15s",
-              }}
-              onMouseEnter={e => (e.currentTarget.style.color = "#44403c")}
-              onMouseLeave={e => (e.currentTarget.style.color = "#c4bfbb")}
-            >
+              <button
+                onClick={onClose}
+                aria-label="Close modal"
+                style={{
+                  marginTop: 2,
+                  width: 28, height: 28,
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  background: "none", border: "none", cursor: "pointer",
+                  color: "var(--ft-text-secondary)", fontSize: 16, lineHeight: 1,
+                  transition: "color 0.15s",
+                }}
+                onMouseEnter={e => (e.currentTarget.style.color = "var(--ft-text-primary)")}
+                onMouseLeave={e => (e.currentTarget.style.color = "var(--ft-text-secondary)")}
+              >
               ✕
             </button>
           </div>
 
           {/* Divider */}
-          <div style={{ height: 1, background: "#f5f4f2", margin: "0 32px", flexShrink: 0 }} />
+          <div style={{ height: 1, background: "var(--ft-border)", margin: "0 32px", flexShrink: 0 }} />
 
           {/* Form */}
           <form onSubmit={handleSubmit} style={{ 
@@ -418,9 +417,9 @@ export default function AddMemberModal({ isOpen, onClose, onSave, onDelete, onMo
               const currentPosition = myIndex + 1;
 
               return (
-                <div style={{ padding: "16px", background: "#f5f4f2", border: "1px solid #e7e5e4" }}>
+                <div style={{ padding: "16px", background: "var(--ft-canvas-bg)", border: "1px solid var(--ft-border)" }}>
                   <label className="amm-label" style={{ marginBottom: 12 }}>Posisi Saudara (Kiri ke Kanan)</label>
-                  <div style={{ display: "flex", alignItems: "center", gap: 12, fontSize: 13, color: "#44403c" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 12, fontSize: 13, color: "var(--ft-text-primary)" }}>
                     <span>Urutan:</span>
                     <input
                       type="number"
@@ -436,13 +435,15 @@ export default function AddMemberModal({ isOpen, onClose, onSave, onDelete, onMo
                       style={{
                         width: 60,
                         padding: "6px 8px",
-                        border: "1px solid #d6d3d1",
+                        border: "1px solid var(--ft-border)",
                         fontFamily: "'DM Sans', sans-serif",
                         fontSize: 13,
-                        outline: "none"
+                        outline: "none",
+                        background: "transparent",
+                        color: "inherit"
                       }}
                     />
-                    <span style={{ color: "#a8a29e" }}>dari {siblings.length} saudara</span>
+                    <span style={{ color: "var(--ft-text-secondary)" }}>dari {siblings.length} saudara</span>
                   </div>
                 </div>
               );
@@ -464,11 +465,11 @@ export default function AddMemberModal({ isOpen, onClose, onSave, onDelete, onMo
                   const currentPosition = myIndex + 1;
 
                   return (
-                    <div key={polySpouse.id} style={{ padding: "16px", background: "#f5f4f2", border: "1px solid #e7e5e4" }}>
+                    <div key={polySpouse.id} style={{ padding: "16px", background: "var(--ft-canvas-bg)", border: "1px solid var(--ft-border)" }}>
                       <label className="amm-label" style={{ marginBottom: 12 }}>
                         Urutan Pernikahan (dengan {polySpouse.firstName} {polySpouse.lastName})
                       </label>
-                      <div style={{ display: "flex", alignItems: "center", gap: 12, fontSize: 13, color: "#44403c" }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 12, fontSize: 13, color: "var(--ft-text-primary)" }}>
                         <span>Urutan:</span>
                         <input
                           type="number"
@@ -482,11 +483,12 @@ export default function AddMemberModal({ isOpen, onClose, onSave, onDelete, onMo
                             }
                           }}
                           style={{
-                            width: 60, padding: "6px 8px", border: "1px solid #d6d3d1",
-                            fontFamily: "'DM Sans', sans-serif", fontSize: 13, outline: "none"
+                            width: 60, padding: "6px 8px", border: "1px solid var(--ft-border)",
+                            fontFamily: "'DM Sans', sans-serif", fontSize: 13, outline: "none",
+                            background: "transparent", color: "inherit"
                           }}
                         />
-                        <span style={{ color: "#a8a29e" }}>dari {theirSpouses.length} pasangan</span>
+                        <span style={{ color: "var(--ft-text-secondary)" }}>dari {theirSpouses.length} pasangan</span>
                       </div>
                     </div>
                   );
@@ -545,15 +547,15 @@ export default function AddMemberModal({ isOpen, onClose, onSave, onDelete, onMo
                   fontFamily: "'DM Sans', sans-serif",
                   fontSize: 13,
                   fontWeight: 400,
-                  color: "#78716c",
+                  color: "var(--ft-text-secondary)",
                   background: "none",
-                  border: "1px solid #e7e5e4",
+                  border: "1px solid var(--ft-border)",
                   cursor: "pointer",
                   letterSpacing: "0.02em",
                   transition: "all 0.15s",
                 }}
-                onMouseEnter={e => { e.currentTarget.style.background = "#fafaf9"; e.currentTarget.style.color = "#44403c"; }}
-                onMouseLeave={e => { e.currentTarget.style.background = "none"; e.currentTarget.style.color = "#78716c"; }}
+                onMouseEnter={e => { e.currentTarget.style.background = "var(--ft-border)"; e.currentTarget.style.color = "var(--ft-text-primary)"; }}
+                onMouseLeave={e => { e.currentTarget.style.background = "none"; e.currentTarget.style.color = "var(--ft-text-secondary)"; }}
               >
                 Batal
               </button>
@@ -567,14 +569,14 @@ export default function AddMemberModal({ isOpen, onClose, onSave, onDelete, onMo
                   fontSize: 13,
                   fontWeight: 500,
                   color: "#fff",
-                  background: "#44403c",
-                  border: "1px solid #44403c",
+                  background: "var(--ft-text-primary)",
+                  border: "1px solid var(--ft-text-primary)",
                   cursor: "pointer",
                   letterSpacing: "0.04em",
-                  transition: "background 0.15s",
+                  transition: "all 0.15s",
                 }}
-                onMouseEnter={e => { e.currentTarget.style.background = "#1c1917"; }}
-                onMouseLeave={e => { e.currentTarget.style.background = "#44403c"; }}
+                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.opacity = "0.9"; }}
+                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.opacity = "1"; }}
               >
                 {editPerson ? "Simpan Perubahan" : "Tambah Anggota"}
               </button>

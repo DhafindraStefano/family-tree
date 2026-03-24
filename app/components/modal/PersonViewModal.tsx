@@ -20,7 +20,7 @@ function Label({ children }: { children: React.ReactNode }) {
       fontWeight: 500,
       letterSpacing: "0.1em",
       textTransform: "uppercase",
-      color: "#a8a29e",
+      color: "var(--ft-text-secondary)",
       marginBottom: 4,
     }}>
       {children}
@@ -34,7 +34,7 @@ function Value({ children }: { children: React.ReactNode }) {
       display: "block",
       fontFamily: "'DM Sans', sans-serif",
       fontSize: 14,
-      color: "#1c1917",
+      color: "var(--ft-text-primary)",
     }}>
       {children}
     </span>
@@ -87,9 +87,9 @@ export function PersonViewModal({ person, people, onClose }: Props) {
           border-radius: 20px;
           font-family: 'DM Sans', sans-serif;
           font-size: 12px;
-          background: #f5f4f2;
-          color: #57534e;
-          border: 1px solid #e7e5e4;
+          background: var(--ft-canvas-bg);
+          color: var(--ft-text-primary);
+          border: 1px solid var(--ft-border);
         }
       `}</style>
 
@@ -100,7 +100,7 @@ export function PersonViewModal({ person, people, onClose }: Props) {
           position: "fixed", inset: 0, zIndex: 50,
           display: "flex", alignItems: "center", justifyContent: "center",
           padding: "16px",
-          background: "rgba(245,244,242,0.85)",
+          background: "rgba(0,0,0,0.4)",
           backdropFilter: "blur(8px)",
         }}
       >
@@ -111,12 +111,13 @@ export function PersonViewModal({ person, people, onClose }: Props) {
             width: "100%",
             maxWidth: 400,
             maxHeight: "90vh",
-            background: "#fff",
+            background: "var(--ft-card-bg)",
             borderRadius: 12,
             overflow: "hidden",
             display: "flex",
             flexDirection: "column",
-            boxShadow: "0 2px 4px rgba(0,0,0,0.04), 0 16px 48px rgba(0,0,0,0.12)",
+            boxShadow: "0 2px 4px rgba(0,0,0,0.1), 0 16px 48px rgba(0,0,0,0.2)",
+            transition: "background 0.3s ease",
           }}
         >
           {/* Accent bar */}
@@ -125,7 +126,7 @@ export function PersonViewModal({ person, people, onClose }: Props) {
           {/* Header with avatar */}
           <div style={{
             padding: "24px 28px 20px",
-            borderBottom: "1px solid #f5f4f2",
+            borderBottom: "1px solid var(--ft-border)",
             display: "flex",
             alignItems: "center",
             gap: 16,
@@ -151,7 +152,7 @@ export function PersonViewModal({ person, people, onClose }: Props) {
               <h2 style={{
                 fontFamily: "'Playfair Display', serif",
                 fontSize: 20, fontWeight: 500,
-                color: "#1c1917",
+                color: "var(--ft-text-primary)",
                 margin: 0, lineHeight: 1.2,
               }}>
                 {person.firstName} {person.lastName}
@@ -160,7 +161,7 @@ export function PersonViewModal({ person, people, onClose }: Props) {
                 <p style={{
                   fontFamily: "'DM Sans', sans-serif",
                   fontSize: 13, fontStyle: "italic",
-                  color: "#78716c", margin: "4px 0 0",
+                  color: "var(--ft-text-secondary)", margin: "4px 0 0",
                 }}>
                   "{person.alias}"
                 </p>
@@ -187,11 +188,11 @@ export function PersonViewModal({ person, people, onClose }: Props) {
                 width: 28, height: 28,
                 display: "flex", alignItems: "center", justifyContent: "center",
                 background: "none", border: "none", cursor: "pointer",
-                color: "#c4bfbb", fontSize: 16, flexShrink: 0,
+                color: "var(--ft-text-secondary)", fontSize: 16, flexShrink: 0,
                 transition: "color 0.15s",
               }}
-              onMouseEnter={e => (e.currentTarget.style.color = "#44403c")}
-              onMouseLeave={e => (e.currentTarget.style.color = "#c4bfbb")}
+              onMouseEnter={e => (e.currentTarget.style.color = "var(--ft-text-primary)")}
+              onMouseLeave={e => (e.currentTarget.style.color = "var(--ft-text-secondary)")}
             >
               ✕
             </button>

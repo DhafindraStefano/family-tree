@@ -7,6 +7,7 @@ import { db } from "../../../lib/firebase";
 import { doc, setDoc, onSnapshot } from "firebase/firestore";
 import { initialFamily } from "../../data/familyData";
 import AddMemberModal from "../modal/AddMemberModal";
+import { useAuth } from "../../../lib/AuthContext";
 
 import { treeStyles } from "./treeStyles";
 import { buildTree } from "./buildTree";
@@ -14,6 +15,8 @@ import { TreeNode } from "./TreeNode";
 
 /* ══ Main ═════════════════════════════════════════════════════════ */
 export default function FamilyTreeClient() {
+  const { user, isAdmin, login, logout } = useAuth();
+
   const [people, setPeople]       = useState<Person[]>(initialFamily);
   const [modalOpen, setModalOpen] = useState(false);
   const [preselect, setPreselect] = useState<Generation>(3);
@@ -101,9 +104,10 @@ export default function FamilyTreeClient() {
   }, []);
 
   // Save: write back to Firestore whenever `people` changes (debounced 800ms)
+  // Only admins are allowed to persist changes.
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(() => {
-    if (!isLoaded) return;
+    if (!isLoaded || !isAdmin) return;
     if (saveTimer.current) clearTimeout(saveTimer.current);
     saveTimer.current = setTimeout(() => {
       // Strip undefined fields — Firestore does not accept them
@@ -112,7 +116,7 @@ export default function FamilyTreeClient() {
         console.error("Firestore write error:", err)
       );
     }, 800);
-  }, [people, isLoaded]);
+  }, [people, isLoaded, isAdmin]);
 
   function handleSave(person: Person) {
     if (editTarget) {
@@ -221,6 +225,7 @@ export default function FamilyTreeClient() {
   }
 
   function openFor(gen: Generation) {
+    if (!isAdmin) return;
     setPreselect(gen);
     setModalOpen(true);
     setEditTarget(null);
@@ -228,6 +233,7 @@ export default function FamilyTreeClient() {
   }
 
   function handleQuickAdd(type: 'child'|'sibling'|'sibling-before'|'spouse', source: Person) {
+    if (!isAdmin) return;
     setQuickAddData({ type, source });
     setModalOpen(true);
     setEditTarget(null);
@@ -354,32 +360,89 @@ export default function FamilyTreeClient() {
             )}
           </div>
 
-          <button
-            id="add-member-btn"
-            onClick={() => openFor(3)}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 6,
-              padding: "8px 14px",
-              fontFamily: "'DM Sans', sans-serif",
-              fontSize: 13,
-              fontWeight: 500,
-              letterSpacing: "0.02em",
-              color: "#fff",
-              background: "#44403c",
-              border: "none",
-              cursor: "pointer",
-              transition: "background 0.15s",
-              borderRadius: 20,
-              flexShrink: 0,
-            }}
-            onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = "#1c1917"; }}
-            onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = "#44403c"; }}
-          >
-            <span style={{ fontSize: 18, lineHeight: 1 }}>+</span>
-            <span className="add-btn-label">Tambah Anggota</span>
-          </button>
+          {/* Auth button */}
+          {user ? (
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              {user.photoURL && (
+                <img
+                  src={user.photoURL}
+                  alt={user.displayName ?? ""}
+                  title={user.displayName ?? ""}
+                  style={{ width: 28, height: 28, borderRadius: "50%", border: "1.5px solid #e7e5e4", cursor: "default" }}
+                />
+              )}
+              <button
+                onClick={logout}
+                style={{
+                  padding: "6px 12px",
+                  fontFamily: "'DM Sans', sans-serif",
+                  fontSize: 12,
+                  fontWeight: 500,
+                  color: "#78716c",
+                  background: "none",
+                  border: "1px solid #e7e5e4",
+                  cursor: "pointer",
+                  borderRadius: 20,
+                  transition: "all 0.15s",
+                }}
+                onMouseEnter={e => { e.currentTarget.style.background = "#f5f4f2"; e.currentTarget.style.color = "#44403c"; }}
+                onMouseLeave={e => { e.currentTarget.style.background = "none"; e.currentTarget.style.color = "#78716c"; }}
+              >
+                Keluar
+              </button>
+            </div>
+          ) : (
+            <button
+              onClick={login}
+              style={{
+                display: "flex", alignItems: "center", gap: 6,
+                padding: "7px 14px",
+                fontFamily: "'DM Sans', sans-serif",
+                fontSize: 13, fontWeight: 500, letterSpacing: "0.02em",
+                color: "#44403c",
+                background: "#fff",
+                border: "1px solid #e7e5e4",
+                cursor: "pointer",
+                borderRadius: 20,
+                flexShrink: 0,
+                transition: "all 0.15s",
+              }}
+              onMouseEnter={e => { e.currentTarget.style.background = "#f5f4f2"; }}
+              onMouseLeave={e => { e.currentTarget.style.background = "#fff"; }}
+            >
+              Masuk
+            </button>
+          )}
+
+          {/* Add button — admins only */}
+          {isAdmin && (
+            <button
+              id="add-member-btn"
+              onClick={() => openFor(3)}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 6,
+                padding: "8px 14px",
+                fontFamily: "'DM Sans', sans-serif",
+                fontSize: 13,
+                fontWeight: 500,
+                letterSpacing: "0.02em",
+                color: "#fff",
+                background: "#44403c",
+                border: "none",
+                cursor: "pointer",
+                transition: "background 0.15s",
+                borderRadius: 20,
+                flexShrink: 0,
+              }}
+              onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = "#1c1917"; }}
+              onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = "#44403c"; }}
+            >
+              <span style={{ fontSize: 18, lineHeight: 1 }}>+</span>
+              <span className="add-btn-label">Tambah Anggota</span>
+            </button>
+          )}
         </div>
       </div>
 
@@ -409,7 +472,13 @@ export default function FamilyTreeClient() {
                   <div className="family-tree" style={{ padding: "80px 120px", display: "inline-block", minWidth: "100%" }}>
                     <ul>
                       {treeData.map(rootNode => (
-                        <TreeNode key={rootNode.id} node={rootNode} onEdit={(p) => { setEditTarget(p); setQuickAddData(null); }} onQuickAdd={handleQuickAdd} />
+                        <TreeNode
+  key={rootNode.id}
+  node={rootNode}
+  onEdit={(p) => { setEditTarget(p); setQuickAddData(null); }}
+  onQuickAdd={handleQuickAdd}
+  isAdmin={isAdmin}
+/>
                       ))}
                     </ul>
                   </div>

@@ -9,21 +9,37 @@ interface AuthContextType {
   user:    User | null;
   isAdmin: boolean;
   loading: boolean;
+  theme:   'light' | 'dark';
+  toggleTheme: () => void;
   login:   () => Promise<void>;
   logout:  () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType>({
-  user: null, isAdmin: false, loading: true,
-  login: async () => {}, logout: async () => {},
+  user: null, isAdmin: false, loading: true, theme: 'light',
+  toggleTheme: () => {}, login: async () => {}, logout: async () => {},
 });
 
 export function AuthProvider({ children }: { children: React.ReactNode }): React.ReactElement {
   const [user,    setUser]    = useState<User | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [theme,   setTheme]   = useState<'light'|'dark'>('light');
 
   const provider = new GoogleAuthProvider();
+
+  // Theme initialization
+  useEffect(() => {
+    const saved = localStorage.getItem('family-tree-theme') as 'light' | 'dark' | null;
+    if (saved) setTheme(saved);
+    // Removed system preference check to default to light mode
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem('family-tree-theme', theme);
+  }, [theme]);
+
+  const toggleTheme = () => setTheme(prev => prev === 'light' ? 'dark' : 'light');
 
   async function checkAdmin(u: User) {
     try {
@@ -56,7 +72,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }): React
   }
 
   return (
-    <AuthContext.Provider value={{ user, isAdmin, loading, login, logout }}>
+    <AuthContext.Provider value={{ user, isAdmin, loading, theme, toggleTheme, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

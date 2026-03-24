@@ -21,11 +21,12 @@ export function MultiSelectDropdown({
       <div
         onClick={() => setOpen(!open)}
         style={{
-          width: "100%", padding: "10px 0", borderBottom: "1px solid #e7e5e4",
-          fontSize: 13, color: selected.length === 0 ? "#a8a29e" : "#44403c",
+          width: "100%", padding: "10px 0", borderBottom: "1px solid var(--ft-border)",
+          fontSize: 13, color: selected.length === 0 ? "var(--ft-text-secondary)" : "var(--ft-text-primary)",
           cursor: "pointer", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis",
           fontFamily: "'DM Sans', sans-serif",
-          userSelect: "none"
+          userSelect: "none",
+          transition: "color 0.3s ease"
         }}
       >
         {text}
@@ -35,12 +36,13 @@ export function MultiSelectDropdown({
            <div className="fixed inset-0 z-[60]" onClick={() => setOpen(false)} />
            <div style={{
              position: "absolute", top: "100%", left: 0, right: 0, zIndex: 70,
-             background: "#fff", border: "1px solid #e7e5e4", boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-             maxHeight: 160, overflowY: "auto"
+             background: "var(--ft-card-bg)", border: "1px solid var(--ft-border)", boxShadow: "0 4px 12px rgba(0,0,0,0.2)",
+             maxHeight: 160, overflowY: "auto",
+             transition: "background 0.3s ease"
            }}>
-             {options.length === 0 && <div style={{ padding: "8px 12px", fontSize: 13, color: "#a8a29e" }}>Tidak ada kerabat yang sesuai</div>}
+             {options.length === 0 && <div style={{ padding: "8px 12px", fontSize: 13, color: "var(--ft-text-secondary)" }}>Tidak ada kerabat yang sesuai</div>}
              {options.map(o => (
-               <label key={o.id} style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 12px", fontSize: 13, color: "#44403c", cursor: "pointer", borderBottom: "1px solid #f5f4f2", margin: 0 }}>
+               <label key={o.id} style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 12px", fontSize: 13, color: "var(--ft-text-primary)", cursor: "pointer", borderBottom: "1px solid var(--ft-border)", margin: 0 }}>
                  <input
                    type="checkbox"
                    checked={selected.includes(o.id)}
@@ -48,7 +50,7 @@ export function MultiSelectDropdown({
                      if (e.target.checked) onChange([...selected, o.id]);
                      else onChange(selected.filter(id => id !== o.id));
                    }}
-                   style={{ accentColor: "#44403c" }}
+                   style={{ accentColor: "var(--ft-text-primary)" }}
                  />
                  {o.label}
                </label>

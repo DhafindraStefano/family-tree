@@ -4,6 +4,7 @@ import React, { useEffect } from "react";
 import { Person, Generation } from "../../types/family";
 import { GenderIcon } from "../tree/GenderIcon";
 import { formatDate, genPalette, GEN_HEADING } from "../tree/constants";
+import { useAuth } from "../../../lib/AuthContext";
 
 interface Props {
   person: Person | null;
@@ -20,7 +21,7 @@ function Label({ children }: { children: React.ReactNode }) {
       fontWeight: 500,
       letterSpacing: "0.1em",
       textTransform: "uppercase",
-      color: "#a8a29e",
+      color: "var(--ft-text-secondary)",
       marginBottom: 4,
     }}>
       {children}
@@ -34,7 +35,7 @@ function Value({ children }: { children: React.ReactNode }) {
       display: "block",
       fontFamily: "'DM Sans', sans-serif",
       fontSize: 14,
-      color: "#1c1917",
+      color: "var(--ft-text-primary)",
     }}>
       {children}
     </span>
@@ -51,6 +52,7 @@ function Row({ label, children }: { label: string; children: React.ReactNode }) 
 }
 
 export function PersonViewModal({ person, people, onClose }: Props) {
+  const { theme } = useAuth();
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
     window.addEventListener("keydown", onKey);
@@ -87,9 +89,9 @@ export function PersonViewModal({ person, people, onClose }: Props) {
           border-radius: 20px;
           font-family: 'DM Sans', sans-serif;
           font-size: 12px;
-          background: #f5f4f2;
-          color: #57534e;
-          border: 1px solid #e7e5e4;
+          background: var(--ft-canvas-bg);
+          color: var(--ft-text-primary);
+          border: 1px solid var(--ft-border);
         }
       `}</style>
 
@@ -100,7 +102,7 @@ export function PersonViewModal({ person, people, onClose }: Props) {
           position: "fixed", inset: 0, zIndex: 50,
           display: "flex", alignItems: "center", justifyContent: "center",
           padding: "16px",
-          background: "rgba(245,244,242,0.85)",
+          background: "rgba(0,0,0,0.4)",
           backdropFilter: "blur(8px)",
         }}
       >
@@ -111,12 +113,13 @@ export function PersonViewModal({ person, people, onClose }: Props) {
             width: "100%",
             maxWidth: 400,
             maxHeight: "90vh",
-            background: "#fff",
+            background: theme === 'light' ? p.cardBg : p.cardBgDark,
             borderRadius: 12,
             overflow: "hidden",
             display: "flex",
             flexDirection: "column",
-            boxShadow: "0 2px 4px rgba(0,0,0,0.04), 0 16px 48px rgba(0,0,0,0.12)",
+            boxShadow: "0 2px 4px rgba(0,0,0,0.1), 0 16px 48px rgba(0,0,0,0.2)",
+            transition: "background 0.3s ease",
           }}
         >
           {/* Accent bar */}
@@ -125,7 +128,7 @@ export function PersonViewModal({ person, people, onClose }: Props) {
           {/* Header with avatar */}
           <div style={{
             padding: "24px 28px 20px",
-            borderBottom: "1px solid #f5f4f2",
+            borderBottom: "1px solid var(--ft-border)",
             display: "flex",
             alignItems: "center",
             gap: 16,
@@ -134,7 +137,8 @@ export function PersonViewModal({ person, people, onClose }: Props) {
             {/* Avatar */}
             <div style={{
               width: 64, height: 64, borderRadius: "50%", flexShrink: 0,
-              background: p.avatarBg, color: p.avatarText,
+              background: theme === 'light' ? p.avatarBg : p.badgeBgDark,
+              color: theme === 'light' ? p.avatarText : p.badgeTextDark,
               display: "flex", alignItems: "center", justifyContent: "center",
               fontFamily: "'Playfair Display', serif", fontSize: 22, fontWeight: 500,
               border: `2px solid ${p.cardBorder}`,
@@ -151,7 +155,7 @@ export function PersonViewModal({ person, people, onClose }: Props) {
               <h2 style={{
                 fontFamily: "'Playfair Display', serif",
                 fontSize: 20, fontWeight: 500,
-                color: "#1c1917",
+                color: "var(--ft-text-primary)",
                 margin: 0, lineHeight: 1.2,
               }}>
                 {person.firstName} {person.lastName}
@@ -160,22 +164,11 @@ export function PersonViewModal({ person, people, onClose }: Props) {
                 <p style={{
                   fontFamily: "'DM Sans', sans-serif",
                   fontSize: 13, fontStyle: "italic",
-                  color: "#78716c", margin: "4px 0 0",
+                  color: "var(--ft-text-secondary)", margin: "4px 0 0",
                 }}>
                   "{person.alias}"
                 </p>
               )}
-              <span style={{
-                display: "inline-block", marginTop: 8,
-                fontFamily: "'DM Sans', sans-serif",
-                fontSize: 10, fontWeight: 500,
-                letterSpacing: "0.08em", textTransform: "uppercase",
-                background: p.badgeBg, color: p.badgeText,
-                padding: "3px 10px", borderRadius: 20,
-                border: `1px solid ${p.cardBorder}`,
-              }}>
-                {GEN_HEADING[person.generation as Generation]}
-              </span>
             </div>
 
             {/* Close */}
@@ -187,11 +180,11 @@ export function PersonViewModal({ person, people, onClose }: Props) {
                 width: 28, height: 28,
                 display: "flex", alignItems: "center", justifyContent: "center",
                 background: "none", border: "none", cursor: "pointer",
-                color: "#c4bfbb", fontSize: 16, flexShrink: 0,
+                color: "var(--ft-text-secondary)", fontSize: 16, flexShrink: 0,
                 transition: "color 0.15s",
               }}
-              onMouseEnter={e => (e.currentTarget.style.color = "#44403c")}
-              onMouseLeave={e => (e.currentTarget.style.color = "#c4bfbb")}
+              onMouseEnter={e => (e.currentTarget.style.color = "var(--ft-text-primary)")}
+              onMouseLeave={e => (e.currentTarget.style.color = "var(--ft-text-secondary)")}
             >
               ✕
             </button>

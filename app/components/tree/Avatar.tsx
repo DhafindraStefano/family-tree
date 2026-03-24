@@ -2,15 +2,18 @@ import React from "react";
 import { Person } from "../../types/family";
 import { genPalette } from "./constants";
 
+import { useAuth } from "../../../lib/AuthContext";
+
 export function Avatar({ person, size, fontSize }: { person: Person; size: number; fontSize: number }) {
+  const { theme } = useAuth();
   const p = genPalette[person.generation];
   const initials = (person.firstName[0] + (person.lastName ? person.lastName[0] : "")).toUpperCase();
   return (
     <div style={{
       width: size, height: size,
       borderRadius: "50%",
-      background: p.avatarBg,
-      color: p.avatarText,
+      background: theme === 'light' ? p.avatarBg : p.badgeBgDark,
+      color: theme === 'light' ? p.avatarText : p.badgeTextDark,
       display: "flex", alignItems: "center", justifyContent: "center",
       fontFamily: "'Playfair Display', serif",
       fontSize: fontSize,

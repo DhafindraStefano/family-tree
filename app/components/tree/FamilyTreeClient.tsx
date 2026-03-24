@@ -16,7 +16,7 @@ import { PersonViewModal } from "../modal/PersonViewModal";
 
 /* ══ Main ═════════════════════════════════════════════════════════ */
 export default function FamilyTreeClient() {
-  const { user, isAdmin, login, logout } = useAuth();
+  const { user, isAdmin, login, logout, theme, toggleTheme } = useAuth();
 
   const [people, setPeople]       = useState<Person[]>(initialFamily);
   const [modalOpen, setModalOpen] = useState(false);
@@ -246,42 +246,84 @@ export default function FamilyTreeClient() {
   if (!isLoaded) return null; // Avoid hydration mismatch
 
   return (
-    <div className="ftc-page">
+    <div className={`ftc-page ${theme === 'dark' ? 'dark-mode' : ''}`}>
       <style dangerouslySetInnerHTML={{ __html: treeStyles }} />
 
       {/* Top nav bar */}
       <div style={{
         position: "fixed", top: 0, left: 0, right: 0, zIndex: 40,
-        background: "rgba(250,249,247,0.92)",
+        background: "var(--ft-nav-bg)",
         backdropFilter: "blur(8px)",
-        borderBottom: "1px solid #e7e5e4",
+        borderBottom: "1px solid var(--ft-border)",
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
         padding: "0 16px",
         height: 56,
+        transition: "background 0.3s ease, border-bottom 0.3s ease",
       }}>
-        <span style={{
-          fontFamily: "'Playfair Display', serif",
-          fontSize: 15,
-          fontWeight: 500,
-          color: "#44403c",
-          letterSpacing: "-0.01em",
-          whiteSpace: "nowrap",
-          overflow: "hidden",
-          textOverflow: "ellipsis",
-          maxWidth: 140,
-        }}>
-          Keluarga Ikadam
-        </span>
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <span style={{
+            fontFamily: "'Playfair Display', serif",
+            fontSize: 15,
+            fontWeight: 500,
+            color: "var(--ft-text-primary)",
+            letterSpacing: "-0.01em",
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            maxWidth: 140,
+          }}>
+            Keluarga Ikadam
+          </span>
+
+          <button
+            onClick={toggleTheme}
+            title={theme === 'light' ? "Mode Gelap" : "Mode Terang"}
+            style={{
+              background: "none",
+              border: "1px solid var(--ft-border)",
+              borderRadius: "50%",
+              width: 32,
+              height: 32,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              cursor: "pointer",
+              color: "var(--ft-text-primary)",
+              transition: "all 0.2s",
+              padding: 0,
+            }}
+            onMouseEnter={e => e.currentTarget.style.background = "var(--ft-border)"}
+            onMouseLeave={e => e.currentTarget.style.background = "none"}
+          >
+            {theme === 'light' ? (
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ width: 16, height: 16 }}>
+                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+              </svg>
+            ) : (
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ width: 16, height: 16 }}>
+                <circle cx="12" cy="12" r="5" />
+                <line x1="12" y1="1" x2="12" y2="3" />
+                <line x1="12" y1="21" x2="12" y2="23" />
+                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+                <line x1="1" y1="12" x2="3" y2="12" />
+                <line x1="21" y1="12" x2="23" y2="12" />
+                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+              </svg>
+            )}
+          </button>
+        </div>
 
         <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
           {/* Search container */}
           <div style={{ position: "relative" }}>
             <div style={{
               display: "flex", alignItems: "center",
-              background: isSearchExpanded ? "#fff" : "transparent",
-              border: isSearchExpanded ? "1px solid #d6d3d1" : "1px solid transparent",
+              background: isSearchExpanded ? "var(--ft-nav-bg)" : "transparent",
+              border: isSearchExpanded ? "1px solid var(--ft-border)" : "1px solid transparent",
               borderRadius: 20,
               padding: "4px 8px",
               transition: "all 0.2s cubic-bezier(0.22, 1, 0.36, 1)",
@@ -291,7 +333,7 @@ export default function FamilyTreeClient() {
                <button 
                  onClick={() => setIsSearchExpanded(true)}
                  style={{ 
-                   background: "none", border: "none", color: isSearchExpanded ? "#a8a29e" : "#44403c", 
+                   background: "none", border: "none", color: "var(--ft-text-primary)", 
                    cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
                    flexShrink: 0, width: 20, height: 20, padding: 0
                  }}
@@ -315,7 +357,7 @@ export default function FamilyTreeClient() {
                    style={{
                      border: "none", background: "transparent", outline: "none",
                      width: "100%", padding: "0 8px", fontFamily: "'DM Sans', sans-serif",
-                     color: "#44403c"
+                     color: "var(--ft-text-primary)"
                    }}
                  />
                )}
@@ -325,8 +367,8 @@ export default function FamilyTreeClient() {
             {isSearchExpanded && searchQuery && searchResults.length > 0 && (
                <div style={{
                  position: "absolute", top: "100%", right: 0, marginTop: 8,
-                 background: "#fff", border: "1px solid #d6d3d1", borderRadius: 12,
-                 boxShadow: "0 4px 12px rgba(0,0,0,0.05)", width: 240, overflow: "hidden",
+                 background: "var(--ft-nav-bg)", border: "1px solid var(--ft-border)", borderRadius: 12,
+                 boxShadow: "0 4px 12px rgba(0,0,0,0.15)", width: 240, overflow: "hidden",
                  zIndex: 50
                }}>
                   {searchResults.map(p => (
@@ -336,16 +378,16 @@ export default function FamilyTreeClient() {
                        style={{
                          width: "100%", padding: "10px 16px",
                          display: "flex", flexDirection: "column", alignItems: "flex-start",
-                         background: "transparent", border: "none", borderBottom: "1px solid #f5f4f2",
+                         background: "transparent", border: "none", borderBottom: `1px solid var(--ft-border)`,
                          cursor: "pointer", fontFamily: "'DM Sans', sans-serif", textAlign: "left",
                        }}
-                       onMouseEnter={e => e.currentTarget.style.background = "#fafaf9"}
+                       onMouseEnter={e => e.currentTarget.style.background = "var(--ft-border)"}
                        onMouseLeave={e => e.currentTarget.style.background = "transparent"}
                      >
-                       <span style={{ fontSize: 13, fontWeight: 500, color: "#1c1917" }}>
+                       <span style={{ fontSize: 13, fontWeight: 500, color: "var(--ft-text-primary)" }}>
                          {p.firstName} {p.lastName}
                        </span>
-                       {p.alias && <span style={{ fontSize: 10, color: "#a8a29e", marginTop: 2 }}>{`"${p.alias}"`}</span>}
+                       {p.alias && <span style={{ fontSize: 10, color: "var(--ft-text-secondary)", marginTop: 2 }}>{`"${p.alias}"`}</span>}
                      </button>
                   ))}
                </div>
@@ -353,9 +395,9 @@ export default function FamilyTreeClient() {
             {isSearchExpanded && searchQuery && searchResults.length === 0 && (
                <div style={{
                  position: "absolute", top: "100%", right: 0, marginTop: 8,
-                 background: "#fff", border: "1px solid #d6d3d1", borderRadius: 12,
-                 boxShadow: "0 4px 12px rgba(0,0,0,0.05)", width: 240, padding: "12px 16px",
-                 zIndex: 50, fontFamily: "'DM Sans', sans-serif", fontSize: 12, color: "#a8a29e", textAlign: "center"
+                 background: "var(--ft-nav-bg)", border: "1px solid var(--ft-border)", borderRadius: 12,
+                 boxShadow: "0 4px 12px rgba(0,0,0,0.15)", width: 240, padding: "12px 16px",
+                 zIndex: 50, fontFamily: "'DM Sans', sans-serif", fontSize: 12, color: "var(--ft-text-secondary)", textAlign: "center"
                }}>
                  Tidak ada hasil
                </div>
@@ -380,15 +422,15 @@ export default function FamilyTreeClient() {
                   fontFamily: "'DM Sans', sans-serif",
                   fontSize: 12,
                   fontWeight: 500,
-                  color: "#78716c",
+                  color: "#ef4444",
                   background: "none",
-                  border: "1px solid #e7e5e4",
+                  border: "1px solid #ef4444",
                   cursor: "pointer",
                   borderRadius: 20,
                   transition: "all 0.15s",
                 }}
-                onMouseEnter={e => { e.currentTarget.style.background = "#f5f4f2"; e.currentTarget.style.color = "#44403c"; }}
-                onMouseLeave={e => { e.currentTarget.style.background = "none"; e.currentTarget.style.color = "#78716c"; }}
+                onMouseEnter={e => { e.currentTarget.style.background = "rgba(239, 68, 68, 0.1)"; e.currentTarget.style.color = "#dc2626"; }}
+                onMouseLeave={e => { e.currentTarget.style.background = "none"; e.currentTarget.style.color = "#ef4444"; }}
               >
                 Keluar
               </button>
@@ -401,16 +443,16 @@ export default function FamilyTreeClient() {
                 padding: "7px 14px",
                 fontFamily: "'DM Sans', sans-serif",
                 fontSize: 13, fontWeight: 500, letterSpacing: "0.02em",
-                color: "#44403c",
-                background: "#fff",
-                border: "1px solid #e7e5e4",
+                color: "var(--ft-text-primary)",
+                background: "var(--ft-nav-bg)",
+                border: "1px solid var(--ft-border)",
                 cursor: "pointer",
                 borderRadius: 20,
                 flexShrink: 0,
                 transition: "all 0.15s",
               }}
-              onMouseEnter={e => { e.currentTarget.style.background = "#f5f4f2"; }}
-              onMouseLeave={e => { e.currentTarget.style.background = "#fff"; }}
+              onMouseEnter={e => { e.currentTarget.style.background = "var(--ft-border)"; }}
+              onMouseLeave={e => { e.currentTarget.style.background = "var(--ft-nav-bg)"; }}
             >
               Masuk
             </button>
@@ -430,16 +472,16 @@ export default function FamilyTreeClient() {
                 fontSize: 13,
                 fontWeight: 500,
                 letterSpacing: "0.02em",
-                color: "#fff",
-                background: "#44403c",
+                color: "var(--ft-canvas-bg)",
+                background: "var(--ft-text-primary)",
                 border: "none",
                 cursor: "pointer",
                 transition: "background 0.15s",
                 borderRadius: 20,
                 flexShrink: 0,
               }}
-              onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = "#1c1917"; }}
-              onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = "#44403c"; }}
+              onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.opacity = "0.9"; }}
+              onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.opacity = "1"; }}
             >
               <span style={{ fontSize: 18, lineHeight: 1 }}>+</span>
               <span className="add-btn-label">Tambah Anggota</span>
@@ -453,23 +495,24 @@ export default function FamilyTreeClient() {
       >
 
         {/* Tree Canvas */}
-        <div style={{ flex: 1, position: "relative", background: "#fdfdfb", overflow: "hidden" }}>
+        <div style={{ flex: 1, position: "relative", background: "var(--ft-canvas-bg)", overflow: "hidden", transition: "background 0.3s ease" }}>
           <TransformWrapper
             ref={transformRef}
             initialScale={1}
-            minScale={0.1}
-            maxScale={3}
+            minScale={0.05}
+            maxScale={4}
             centerOnInit
             limitToBounds={false}
-            wheel={{ step: 0.08, activationKeys: ["Control"] }}
-            panning={{ wheelPanning: true }}
+            wheel={{ step: 0.15, disabled: false }}
+            pinch={{ step: 10, disabled: false }}
+            panning={{ disabled: false, velocityDisabled: false }}
           >
             {({ zoomIn, zoomOut, resetTransform }) => (
               <>
-                <div style={{ position: "absolute", bottom: 20, right: 12, zIndex: 10, display: "flex", flexDirection: "column", gap: 0, background: "#fff", borderRadius: 14, boxShadow: "0 2px 12px rgba(0,0,0,0.10)", border: "1px solid #e7e5e4", overflow: "hidden" }}>
-                  <button onClick={() => zoomIn()} title="Perbesar" style={{ width: 44, height: 44, background: "#fff", border: "none", borderBottom: "1px solid #e7e5e4", cursor: "pointer", fontSize: 20, color: "#44403c", display: "flex", alignItems: "center", justifyContent: "center" }}>+</button>
-                  <button onClick={() => zoomOut()} title="Perkecil" style={{ width: 44, height: 44, background: "#fff", border: "none", borderBottom: "1px solid #e7e5e4", cursor: "pointer", fontSize: 20, color: "#44403c", display: "flex", alignItems: "center", justifyContent: "center" }}>−</button>
-                  <button onClick={() => resetTransform()} title="Pusatkan" style={{ width: 44, height: 44, background: "#fff", border: "none", cursor: "pointer", fontSize: 16, color: "#44403c", display: "flex", alignItems: "center", justifyContent: "center" }}>⌂</button>
+                <div style={{ position: "absolute", bottom: 20, right: 12, zIndex: 10, display: "flex", flexDirection: "column", gap: 0, background: "var(--ft-nav-bg)", borderRadius: 14, boxShadow: "0 2px 12px rgba(0,0,0,0.15)", border: "1px solid var(--ft-border)", overflow: "hidden", transition: "all 0.3s ease" }}>
+                  <button onClick={() => zoomIn()} title="Perbesar" style={{ width: 44, height: 44, background: "none", border: "none", borderBottom: "1px solid var(--ft-border)", cursor: "pointer", fontSize: 20, color: "var(--ft-text-primary)", display: "flex", alignItems: "center", justifyContent: "center", transition: "all 0.2s" }} onMouseEnter={e => e.currentTarget.style.background = "var(--ft-border)"} onMouseLeave={e => e.currentTarget.style.background = "none"}>+</button>
+                  <button onClick={() => zoomOut()} title="Perkecil" style={{ width: 44, height: 44, background: "none", border: "none", borderBottom: "1px solid var(--ft-border)", cursor: "pointer", fontSize: 20, color: "var(--ft-text-primary)", display: "flex", alignItems: "center", justifyContent: "center", transition: "all 0.2s" }} onMouseEnter={e => e.currentTarget.style.background = "var(--ft-border)"} onMouseLeave={e => e.currentTarget.style.background = "none"}>−</button>
+                  <button onClick={() => resetTransform()} title="Pusatkan" style={{ width: 44, height: 44, background: "none", border: "none", cursor: "pointer", fontSize: 16, color: "var(--ft-text-primary)", display: "flex", alignItems: "center", justifyContent: "center", transition: "all 0.2s" }} onMouseEnter={e => e.currentTarget.style.background = "var(--ft-border)"} onMouseLeave={e => e.currentTarget.style.background = "none"}>⌂</button>
                 </div>
                 <TransformComponent wrapperStyle={{ width: "100%", height: "100%", cursor: "grab" }}>
                   <div className="family-tree" style={{ padding: "80px 120px", display: "inline-block", minWidth: "100%" }}>

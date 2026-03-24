@@ -422,15 +422,15 @@ export default function FamilyTreeClient() {
                   fontFamily: "'DM Sans', sans-serif",
                   fontSize: 12,
                   fontWeight: 500,
-                  color: "#78716c",
+                  color: "#ef4444",
                   background: "none",
-                  border: "1px solid #e7e5e4",
+                  border: "1px solid #ef4444",
                   cursor: "pointer",
                   borderRadius: 20,
                   transition: "all 0.15s",
                 }}
-                onMouseEnter={e => { e.currentTarget.style.background = "#f5f4f2"; e.currentTarget.style.color = "#44403c"; }}
-                onMouseLeave={e => { e.currentTarget.style.background = "none"; e.currentTarget.style.color = "#78716c"; }}
+                onMouseEnter={e => { e.currentTarget.style.background = "rgba(239, 68, 68, 0.1)"; e.currentTarget.style.color = "#dc2626"; }}
+                onMouseLeave={e => { e.currentTarget.style.background = "none"; e.currentTarget.style.color = "#ef4444"; }}
               >
                 Keluar
               </button>
@@ -472,16 +472,16 @@ export default function FamilyTreeClient() {
                 fontSize: 13,
                 fontWeight: 500,
                 letterSpacing: "0.02em",
-                color: "#fff",
-                background: "#44403c",
+                color: "var(--ft-canvas-bg)",
+                background: "var(--ft-text-primary)",
                 border: "none",
                 cursor: "pointer",
                 transition: "background 0.15s",
                 borderRadius: 20,
                 flexShrink: 0,
               }}
-              onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = "#1c1917"; }}
-              onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = "#44403c"; }}
+              onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.opacity = "0.9"; }}
+              onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.opacity = "1"; }}
             >
               <span style={{ fontSize: 18, lineHeight: 1 }}>+</span>
               <span className="add-btn-label">Tambah Anggota</span>

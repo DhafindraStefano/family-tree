@@ -18,16 +18,14 @@ export function TreeNode({
     <li>
       <div style={{ display: "flex", gap: 12, alignItems: "center", justifyContent: "center" }}>
         {node.isDuplicatePrimary ? (
-           <div style={{ width: dims.cardW, height: dims.cardW, position: "relative" }}>
-              <div style={{ position: "absolute", top: "50%", right: -12, width: "65%", height: 1.5, background: "#d6d3d1" }} />
-           </div>
+           <div style={{ width: dims.cardW, height: dims.cardW, position: "relative" }} />
         ) : (
            <PersonCard person={node.primary} onEdit={onEdit} onQuickAdd={onQuickAdd} onView={onView} isAdmin={isAdmin}/>
         )}
         
         {node.spouse && (
           <>
-            <div style={{ width: 24, height: 1, background: "#d6d3d1", flexShrink: 0 }} />
+            <div style={{ width: 24, height: 2, background: "var(--ft-border)", flexShrink: 0 }} />
             <PersonCard person={node.spouse} onEdit={onEdit} onQuickAdd={onQuickAdd} onView={onView} isAdmin={isAdmin}/>
           </>
         )}

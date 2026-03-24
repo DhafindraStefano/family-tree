@@ -499,12 +499,13 @@ export default function FamilyTreeClient() {
           <TransformWrapper
             ref={transformRef}
             initialScale={1}
-            minScale={0.1}
-            maxScale={3}
+            minScale={0.05}
+            maxScale={4}
             centerOnInit
             limitToBounds={false}
-            wheel={{ step: 0.08, activationKeys: ["Control"] }}
-            panning={{ wheelPanning: true }}
+            wheel={{ step: 0.15, disabled: false }}
+            pinch={{ step: 10, disabled: false }}
+            panning={{ disabled: false, velocityDisabled: false }}
           >
             {({ zoomIn, zoomOut, resetTransform }) => (
               <>

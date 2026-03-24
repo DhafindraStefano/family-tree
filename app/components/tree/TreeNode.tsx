@@ -5,11 +5,12 @@ import { GEN_DIMS } from "./constants";
 import { PersonCard } from "./PersonCard";
 
 export function TreeNode({ 
-  node, onEdit, onQuickAdd, isAdmin
+  node, onEdit, onQuickAdd, onView, isAdmin
 }: { 
   node: ComputedFamily; 
   onEdit?: (p: Person) => void, 
-  onQuickAdd?: (type: 'child'|'sibling'|'sibling-before'|'spouse', p: Person) => void 
+  onQuickAdd?: (type: 'child'|'sibling'|'sibling-before'|'spouse', p: Person) => void;
+  onView?: (p: Person) => void;
   isAdmin?: boolean;
 }) {
   const dims = GEN_DIMS[node.primary.generation];
@@ -21,20 +22,20 @@ export function TreeNode({
               <div style={{ position: "absolute", top: "50%", right: -12, width: "65%", height: 1.5, background: "#d6d3d1" }} />
            </div>
         ) : (
-           <PersonCard person={node.primary} onEdit={onEdit} onQuickAdd={onQuickAdd} isAdmin={isAdmin}/>
+           <PersonCard person={node.primary} onEdit={onEdit} onQuickAdd={onQuickAdd} onView={onView} isAdmin={isAdmin}/>
         )}
         
         {node.spouse && (
           <>
             <div style={{ width: 24, height: 1, background: "#d6d3d1", flexShrink: 0 }} />
-            <PersonCard person={node.spouse} onEdit={onEdit} onQuickAdd={onQuickAdd} isAdmin={isAdmin}/>
+            <PersonCard person={node.spouse} onEdit={onEdit} onQuickAdd={onQuickAdd} onView={onView} isAdmin={isAdmin}/>
           </>
         )}
       </div>
       {node.children.length > 0 && (
         <ul>
           {node.children.map(child => (
-            <TreeNode key={child.id} node={child} onEdit={onEdit} onQuickAdd={onQuickAdd} isAdmin={isAdmin}/>
+            <TreeNode key={child.id} node={child} onEdit={onEdit} onQuickAdd={onQuickAdd} onView={onView} isAdmin={isAdmin}/>
           ))}
         </ul>
       )}

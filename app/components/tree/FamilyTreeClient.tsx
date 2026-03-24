@@ -12,6 +12,7 @@ import { useAuth } from "../../../lib/AuthContext";
 import { treeStyles } from "./treeStyles";
 import { buildTree } from "./buildTree";
 import { TreeNode } from "./TreeNode";
+import { PersonViewModal } from "../modal/PersonViewModal";
 
 /* ══ Main ═════════════════════════════════════════════════════════ */
 export default function FamilyTreeClient() {
@@ -23,6 +24,7 @@ export default function FamilyTreeClient() {
   const [isLoaded, setIsLoaded]   = useState(false);
   const [editTarget, setEditTarget] = useState<Person | null>(null);
   const [quickAddData, setQuickAddData] = useState<{ type: 'child'|'sibling'|'sibling-before'|'spouse', source: Person } | null>(null);
+  const [viewTarget, setViewTarget] = useState<Person | null>(null);
 
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearchExpanded, setIsSearchExpanded] = useState(false);
@@ -459,7 +461,8 @@ export default function FamilyTreeClient() {
             maxScale={3}
             centerOnInit
             limitToBounds={false}
-            wheel={{ step: 0.1 }}
+            wheel={{ step: 0.08, activationKeys: ["Control"] }}
+            panning={{ wheelPanning: true }}
           >
             {({ zoomIn, zoomOut, resetTransform }) => (
               <>
@@ -477,6 +480,7 @@ export default function FamilyTreeClient() {
   node={rootNode}
   onEdit={(p) => { setEditTarget(p); setQuickAddData(null); }}
   onQuickAdd={handleQuickAdd}
+  onView={(p) => setViewTarget(p)}
   isAdmin={isAdmin}
 />
                       ))}
@@ -489,7 +493,7 @@ export default function FamilyTreeClient() {
         </div>
       </div>
 
-      {/* Modal */}
+      {/* Edit Modal (admins only) */}
       <AddMemberModal
         isOpen={modalOpen || !!editTarget || !!quickAddData}
         onClose={() => { setModalOpen(false); setEditTarget(null); setQuickAddData(null); }}
@@ -501,6 +505,13 @@ export default function FamilyTreeClient() {
         people={people}
         editPerson={editTarget}
         quickAddData={quickAddData}
+      />
+
+      {/* View Modal (all visitors) */}
+      <PersonViewModal
+        person={viewTarget}
+        people={people}
+        onClose={() => setViewTarget(null)}
       />
     </div>
   );

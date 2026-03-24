@@ -28,9 +28,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }): React
   async function checkAdmin(u: User) {
     try {
       const snap = await getDoc(doc(db, "config", "admins"));
+      console.log("[AuthContext] config/admins exists:", snap.exists());
+      console.log("[AuthContext] config/admins data:", snap.exists() ? snap.data() : "—");
       const emails: string[] = snap.exists() ? snap.data().emails : [];
-      setIsAdmin(emails.includes(u.email ?? ""));
-    } catch {
+      console.log("[AuthContext] admin emails list:", emails);
+      console.log("[AuthContext] signed-in email:", u.email);
+      const result = emails.includes(u.email ?? "");
+      console.log("[AuthContext] isAdmin =>", result);
+      setIsAdmin(result);
+    } catch (err) {
+      console.error("[AuthContext] Error reading config/admins:", err);
       setIsAdmin(false);
     }
   }

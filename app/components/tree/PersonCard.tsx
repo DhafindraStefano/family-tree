@@ -4,10 +4,11 @@ import { genPalette, GEN_DIMS, formatDate } from "./constants";
 import { Avatar } from "./Avatar";
 import { GenderIcon } from "./GenderIcon";
 
-export function PersonCard({ person, onEdit, onQuickAdd, isAdmin }: { 
+export function PersonCard({ person, onEdit, onQuickAdd, onView, isAdmin }: { 
   person: Person; 
   onEdit?: (p: Person) => void; 
-  onQuickAdd?: (type: 'child'|'sibling'|'sibling-before'|'spouse', p: Person) => void 
+  onQuickAdd?: (type: 'child'|'sibling'|'sibling-before'|'spouse', p: Person) => void;
+  onView?: (p: Person) => void;
   isAdmin?: boolean;
 }) {
   const [isHovered, setIsHovered] = useState(false);
@@ -61,6 +62,8 @@ export function PersonCard({ person, onEdit, onQuickAdd, isAdmin }: {
           if (isAdmin) {
             setIsHeld(false);
             onEdit?.(person);
+          } else {
+            onView?.(person);
           }
         }}
         onTouchStart={() => {
@@ -95,7 +98,7 @@ export function PersonCard({ person, onEdit, onQuickAdd, isAdmin }: {
           display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center",
           padding: "16px", background: "#fff",
           border: `1px solid ${p.cardBorder}`, borderTop: `3px solid ${p.accent}`,
-          width: "100%", flexShrink: 0, cursor: isAdmin ? "pointer" : "default",
+          width: "100%", flexShrink: 0, cursor: "pointer",
           transition: "box-shadow 0.2s, transform 0.2s",
           boxShadow: isHovered ? "0 6px 20px rgba(0,0,0,0.10)" : "0 1px 4px rgba(0,0,0,0.05)",
           transform: isHovered ? "translateY(-2px)" : "translateY(0)"
